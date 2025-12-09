@@ -74,7 +74,6 @@ function LocationPicker({
   useEffect(() => {
     const loadLeaflet = async () => {
       const leaflet = await import("leaflet");
-      await import("leaflet/dist/leaflet.css");
       setL(leaflet.default);
     };
     loadLeaflet();
