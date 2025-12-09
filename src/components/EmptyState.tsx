@@ -4,9 +4,10 @@ import { motion } from "framer-motion";
 
 interface EmptyStateProps {
   cityName: string;
+  onNominate?: () => void;
 }
 
-export function EmptyState({ cityName }: EmptyStateProps) {
+export function EmptyState({ cityName, onNominate }: EmptyStateProps) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -26,6 +27,7 @@ export function EmptyState({ cityName }: EmptyStateProps) {
       <motion.button
         whileHover={{ scale: 1.02 }}
         whileTap={{ scale: 0.98 }}
+        onClick={onNominate}
         className="flex items-center gap-2 px-6 py-3 bg-[#c8ff00] text-[#0a0a0b] rounded-lg font-semibold hover:bg-[#c8ff00]/90 transition-colors"
       >
         <span className="text-xl">+</span>

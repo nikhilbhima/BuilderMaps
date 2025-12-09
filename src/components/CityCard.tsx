@@ -20,18 +20,18 @@ export function CityCard({ city, index }: CityCardProps) {
       transition={{ duration: 0.3, delay: index * 0.05 }}
     >
       <Link href={`/city/${city.id}`}>
-        <div className="group flex items-center gap-4 p-3 rounded-xl hover:bg-[#1a1a1f] transition-all duration-300 cursor-pointer">
+        <div className="group flex items-center gap-3 p-2 rounded-lg hover:bg-[#1a1a1f] transition-all duration-300 cursor-pointer">
           <CityIcon icon={city.icon} color={city.color} />
-          <div className="flex flex-col">
-            <span className="text-[#fafafa] font-medium group-hover:text-[#c8ff00] transition-colors">
+          <div className="flex flex-col min-w-0">
+            <span className="text-[#fafafa] text-sm font-medium group-hover:text-[#c8ff00] transition-colors truncate">
               {city.name}
             </span>
             {hasSpots ? (
-              <span className="text-[#71717a] text-sm font-mono">
+              <span className="text-[#71717a] text-xs">
                 {city.spotCount} {city.spotCount === 1 ? "Spot" : "Spots"}
               </span>
             ) : (
-              <span className="text-[#3f3f46] text-sm italic">
+              <span className="text-[#3f3f46] text-xs italic">
                 Be first to add
               </span>
             )}

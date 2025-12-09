@@ -68,6 +68,22 @@ body {
 .marker-cafe { color: var(--accent-cyan); }
 .marker-events { color: var(--accent-lime); }
 
+/* Hide scrollbar for horizontal scroll areas */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+/* Mobile touch improvements */
+@media (max-width: 640px) {
+  button, a {
+    -webkit-tap-highlight-color: transparent;
+  }
+}
+
 /* Custom theme colors for Tailwind v4 */
 @theme {
   /* Backgrounds */

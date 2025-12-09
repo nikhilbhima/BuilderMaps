@@ -15,6 +15,22 @@ export type VibeTag =
   | "rooftop vibes"
   | "quiet zone";
 
+export interface Upvoter {
+  handle: string; // Twitter/X handle
+  displayName?: string;
+  avatarUrl?: string;
+}
+
+export interface Review {
+  id: string;
+  authorHandle: string; // Twitter/X handle
+  authorName?: string;
+  authorAvatarUrl?: string;
+  rating: 1 | 2 | 3 | 4 | 5;
+  text: string;
+  createdAt: string; // ISO date string
+}
+
 export interface Spot {
   id: string;
   name: string;
@@ -24,6 +40,8 @@ export interface Spot {
   coordinates: [number, number]; // [lng, lat]
   vibes: VibeTag[];
   upvotes: number;
+  upvoters?: Upvoter[]; // List of people who upvoted
+  reviews?: Review[]; // User reviews
   googleMapsUrl?: string;
   lumaUrl?: string;
   websiteUrl?: string;
@@ -46,6 +64,18 @@ export const spots: Spot[] = [
     coordinates: [77.6147, 12.9352],
     vibes: ["crypto crowd", "ai builders", "3am friendly", "loud debates"],
     upvotes: 142,
+    upvoters: [
+      { handle: "balloondotrun", displayName: "Balloon" },
+      { handle: "naval", displayName: "Naval" },
+      { handle: "paulg", displayName: "Paul Graham" },
+      { handle: "sama", displayName: "Sam Altman" },
+      { handle: "eshita", displayName: "Eshita" },
+    ],
+    reviews: [
+      { id: "r1", authorHandle: "techfounder", authorName: "Raj K", rating: 5, text: "Best place to build in Bangalore. Met my co-founder here. The energy at 2am is unmatched.", createdAt: "2025-11-15T10:30:00Z" },
+      { id: "r2", authorHandle: "webdevgal", authorName: "Priya S", rating: 4, text: "Great vibes, amazing community. Gets a bit loud sometimes but that's part of the charm.", createdAt: "2025-10-22T14:00:00Z" },
+      { id: "r3", authorHandle: "cryptobro99", authorName: "Aditya M", rating: 5, text: "If you're in web3, this is THE place. Everyone's shipping here.", createdAt: "2025-09-08T18:45:00Z" },
+    ],
     googleMapsUrl: "https://maps.google.com/?q=ZoHouse+Bangalore",
     lumaUrl: "https://lu.ma/zohouse",
     twitterUrl: "https://twitter.com/zoloworld",
@@ -62,6 +92,12 @@ export const spots: Spot[] = [
     coordinates: [77.6089, 12.9279],
     vibes: ["deep focus", "founders only", "fast wifi", "good coffee"],
     upvotes: 128,
+    upvoters: [
+      { handle: "karthikS", displayName: "Karthik" },
+      { handle: "shreya_tech", displayName: "Shreya" },
+      { handle: "arjunBLD", displayName: "Arjun" },
+      { handle: "devika_ai", displayName: "Devika" },
+    ],
     googleMapsUrl: "https://maps.google.com/?q=Shipyard+Bangalore",
     websiteUrl: "https://shipyard.co",
     addedBy: "nikhilbhima",
@@ -132,6 +168,21 @@ export const spots: Spot[] = [
     vibes: ["quiet zone", "deep focus", "indie hackers"],
     upvotes: 45,
     googleMapsUrl: "https://maps.google.com/?q=Aretaxia+Bangalore",
+    addedBy: "nikhilbhima",
+    approved: true,
+  },
+  {
+    id: "bitgo-bangalore",
+    name: "BitGo",
+    cityId: "bangalore",
+    type: "event-venue",
+    description: "BitGo hosts monthly events for devs, builders, engineers, and the crypto community. Great place to connect with web3 folks.",
+    coordinates: [12.93378, 77.62105],
+    vibes: ["crypto crowd", "open community", "loud debates"],
+    upvotes: 32,
+    googleMapsUrl: "https://maps.google.com/?q=139+Koramangala+5th+Block+Bangalore",
+    websiteUrl: "https://www.bitgo.com",
+    twitterUrl: "https://twitter.com/BitGo",
     addedBy: "nikhilbhima",
     approved: true,
   },
