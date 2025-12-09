@@ -13,7 +13,6 @@
     "@tailwindcss/postcss": "^4.1.17",
     "autoprefixer": "^10.4.22",
     "framer-motion": "^12.23.25",
-    "leaflet": "^1.9.4",
     "maplibre-gl": "^5.14.0",
     "next": "^16.0.8",
     "postcss": "^8.5.6",

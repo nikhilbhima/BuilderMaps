@@ -3,7 +3,6 @@
 @import "@fontsource/space-grotesk/500.css";
 @import "@fontsource/space-grotesk/600.css";
 @import "@fontsource/space-grotesk/700.css";
-@import "leaflet/dist/leaflet.css";
 
 :root {
   /* Backgrounds */
@@ -83,11 +82,6 @@ body {
   button, a {
     -webkit-tap-highlight-color: transparent;
   }
-}
-
-/* Hide Leaflet attribution */
-.leaflet-control-attribution {
-  display: none !important;
 }
 
 /* Custom theme colors for Tailwind v4 */

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { SpotType, spotTypeConfig } from "@/data/spots";
 import { cities } from "@/data/cities";
@@ -93,263 +93,6 @@ function extractCoordsFromGoogleMapsUrl(url: string): [number, number] | null {
   }
 }
 
-// Location picker component
-function LocationPicker({
-  cityId,
-  coordinates,
-  googleMapsUrl,
-  onCoordinatesChange,
-  onGoogleMapsUrlChange,
-  error,
-}: {
-  cityId: string;
-  coordinates: [number, number] | null;
-  googleMapsUrl: string;
-  onCoordinatesChange: (coords: [number, number] | null) => void;
-  onGoogleMapsUrlChange: (url: string) => void;
-  error: string | null;
-}) {
-  const mapRef = useRef<L.Map | null>(null);
-  const mapContainerRef = useRef<HTMLDivElement>(null);
-  const markerRef = useRef<L.Marker | null>(null);
-  const [L, setL] = useState<typeof import("leaflet") | null>(null);
-  const [isLoaded, setIsLoaded] = useState(false);
-  const [urlError, setUrlError] = useState<string | null>(null);
-
-  const city = cities.find((c) => c.id === cityId);
-  // City coordinates are [lng, lat], convert to [lat, lng] for Leaflet
-  const cityCenter: [number, number] = city
-    ? [city.coordinates[1], city.coordinates[0]]
-    : [0, 0];
-
-  // Load Leaflet
-  useEffect(() => {
-    const loadLeaflet = async () => {
-      const leaflet = await import("leaflet");
-      setL(leaflet.default);
-    };
-    loadLeaflet();
-  }, []);
-
-  const [isResolving, setIsResolving] = useState(false);
-
-  // Handle Google Maps URL change
-  const handleUrlChange = async (url: string) => {
-    onGoogleMapsUrlChange(url);
-    setUrlError(null);
-
-    if (!url.trim()) {
-      onCoordinatesChange(null);
-      return;
-    }
-
-    // Check if it's a valid Google Maps URL
-    const isShortUrl = url.includes("maps.app.goo.gl") || url.includes("goo.gl/maps");
-    const isFullUrl = url.includes("google.com/maps");
-
-    if (!isShortUrl && !isFullUrl) {
-      setUrlError("Please paste a valid Google Maps link");
-      return;
-    }
-
-    // Try to extract coordinates directly first
-    let coords = extractCoordsFromGoogleMapsUrl(url);
-
-    // If it's a short URL and we couldn't extract coords, resolve it
-    if (!coords && isShortUrl) {
-      setIsResolving(true);
-      try {
-        const response = await fetch(`/api/resolve-maps-url?url=${encodeURIComponent(url)}`);
-        if (response.ok) {
-          const data = await response.json();
-          if (data.resolvedUrl) {
-            coords = extractCoordsFromGoogleMapsUrl(data.resolvedUrl);
-          }
-        }
-      } catch (err) {
-        console.error("Failed to resolve short URL:", err);
-      } finally {
-        setIsResolving(false);
-      }
-    }
-
-    if (coords) {
-      onCoordinatesChange(coords);
-      // Pan map to the location
-      if (mapRef.current) {
-        mapRef.current.flyTo(coords, 16, { duration: 0.8 });
-      }
-    } else {
-      setUrlError("Could not extract location from this link. Try copying a different Google Maps link.");
-    }
-  };
-
-  // Initialize map
-  useEffect(() => {
-    if (!L || !mapContainerRef.current || !cityId) return;
-
-    // Clean up previous map
-    if (mapRef.current) {
-      mapRef.current.remove();
-      mapRef.current = null;
-    }
-
-    mapRef.current = L.map(mapContainerRef.current, {
-      center: cityCenter,
-      zoom: 12,
-      zoomControl: true,
-    });
-
-    L.tileLayer(
-      "https://tiles.stadiamaps.com/tiles/alidade_smooth_dark/{z}/{x}/{y}{r}.png",
-      {
-        attribution:
-          '&copy; <a href="https://stadiamaps.com/">Stadia Maps</a>',
-        maxZoom: 20,
-      }
-    ).addTo(mapRef.current);
-
-    setIsLoaded(true);
-
-    return () => {
-      if (mapRef.current) {
-        mapRef.current.remove();
-        mapRef.current = null;
-      }
-    };
-  }, [L, cityId]);
-
-  // Update marker when coordinates change
-  useEffect(() => {
-    if (!mapRef.current || !L || !isLoaded) return;
-
-    // Remove existing marker
-    if (markerRef.current) {
-      markerRef.current.remove();
-      markerRef.current = null;
-    }
-
-    // Add new marker if we have coordinates
-    if (coordinates) {
-      const iconHtml = `
-        <div style="
-          width: 32px;
-          height: 32px;
-          border-radius: 50%;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          font-size: 16px;
-          background: #c8ff00;
-          border: 2px solid #c8ff00;
-          box-shadow: 0 0 15px rgba(200, 255, 0, 0.5);
-          transform: translate(-50%, -50%);
-        ">
-          📍
-        </div>
-      `;
-
-      const icon = L.divIcon({
-        html: iconHtml,
-        className: "custom-picker-marker",
-        iconSize: [32, 32],
-        iconAnchor: [16, 16],
-      });
-
-      markerRef.current = L.marker([coordinates[0], coordinates[1]], { icon }).addTo(
-        mapRef.current
-      );
-    }
-  }, [coordinates, isLoaded, L]);
-
-  // Recenter map when city changes
-  useEffect(() => {
-    if (mapRef.current && cityCenter[0] !== 0) {
-      mapRef.current.flyTo(cityCenter, 12, { duration: 0.8 });
-      onCoordinatesChange(null);
-      onGoogleMapsUrlChange("");
-      setUrlError(null);
-    }
-  }, [cityId]);
-
-  if (!cityId) {
-    return (
-      <div className="w-full h-48 bg-[#0d0d0d] border border-[#272727] rounded-lg flex items-center justify-center">
-        <p className="text-[#52525b] text-sm">Select a city first</p>
-      </div>
-    );
-  }
-
-  return (
-    <div className="space-y-2">
-      {/* Google Maps URL input */}
-      <div className="relative">
-        <svg
-          className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#52525b]"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
-          />
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
-          />
-        </svg>
-        <input
-          type="text"
-          value={googleMapsUrl}
-          onChange={(e) => handleUrlChange(e.target.value)}
-          placeholder="Paste Google Maps link here..."
-          className="w-full pl-10 pr-10 py-2.5 bg-[#0d0d0d] border border-[#272727] rounded-lg text-[#fafafa] placeholder-[#52525b] text-sm focus:outline-none focus:border-[#c8ff00]/50"
-        />
-        {isResolving && (
-          <div className="absolute right-3 top-1/2 -translate-y-1/2">
-            <div className="w-4 h-4 border-2 border-[#c8ff00] border-t-transparent rounded-full animate-spin" />
-          </div>
-        )}
-      </div>
-      {urlError && <p className="text-xs text-red-400">{urlError}</p>}
-
-      {/* Map preview */}
-      <div
-        ref={mapContainerRef}
-        className="w-full h-40 rounded-lg overflow-hidden border border-[#272727]"
-      />
-      {!isLoaded && (
-        <div className="absolute inset-0 bg-[#0d0d0d] flex items-center justify-center">
-          <div className="w-6 h-6 border-2 border-[#c8ff00] border-t-transparent rounded-full animate-spin" />
-        </div>
-      )}
-
-      {/* Selected location info */}
-      {coordinates ? (
-        <p className="text-xs text-[#c8ff00]">
-          ✓ Location detected: {coordinates[0].toFixed(5)}, {coordinates[1].toFixed(5)}
-        </p>
-      ) : (
-        <p className="text-xs text-[#71717a]">
-          Go to Google Maps, find the spot, click &quot;Share&quot; → &quot;Copy link&quot; and paste above
-        </p>
-      )}
-      {error && <p className="text-xs text-red-400">{error}</p>}
-      <style jsx global>{`
-        .custom-picker-marker {
-          background: transparent !important;
-          border: none !important;
-        }
-      `}</style>
-    </div>
-  );
-}
-
 export function NominationModal({ isOpen, onClose, defaultCityId }: NominationModalProps) {
   const [formData, setFormData] = useState({
     name: "",
@@ -371,6 +114,8 @@ export function NominationModal({ isOpen, onClose, defaultCityId }: NominationMo
   const [showRequestCity, setShowRequestCity] = useState(false);
   const [requestedCity, setRequestedCity] = useState("");
   const [cityRequestSubmitted, setCityRequestSubmitted] = useState(false);
+  const [isResolvingUrl, setIsResolvingUrl] = useState(false);
+  const [urlError, setUrlError] = useState<string | null>(null);
 
   // Lock city if defaultCityId is provided
   const isCityLocked = !!defaultCityId;
@@ -407,9 +152,52 @@ export function NominationModal({ isOpen, onClose, defaultCityId }: NominationMo
     [formData.cityId]
   );
 
-  const handleCoordinatesChange = (coords: [number, number] | null) => {
-    setFormData((prev) => ({ ...prev, coordinates: coords }));
-    validateLocation(coords);
+  // Handle Google Maps URL change
+  const handleUrlChange = async (url: string) => {
+    setFormData((prev) => ({ ...prev, googleMapsUrl: url }));
+    setUrlError(null);
+
+    if (!url.trim()) {
+      setFormData((prev) => ({ ...prev, coordinates: null }));
+      return;
+    }
+
+    // Check if it's a valid Google Maps URL
+    const isShortUrl = url.includes("maps.app.goo.gl") || url.includes("goo.gl/maps");
+    const isFullUrl = url.includes("google.com/maps");
+
+    if (!isShortUrl && !isFullUrl) {
+      setUrlError("Please paste a valid Google Maps link");
+      return;
+    }
+
+    // Try to extract coordinates directly first
+    let coords = extractCoordsFromGoogleMapsUrl(url);
+
+    // If it's a short URL and we couldn't extract coords, resolve it
+    if (!coords && isShortUrl) {
+      setIsResolvingUrl(true);
+      try {
+        const response = await fetch(`/api/resolve-maps-url?url=${encodeURIComponent(url)}`);
+        if (response.ok) {
+          const data = await response.json();
+          if (data.resolvedUrl) {
+            coords = extractCoordsFromGoogleMapsUrl(data.resolvedUrl);
+          }
+        }
+      } catch (err) {
+        console.error("Failed to resolve short URL:", err);
+      } finally {
+        setIsResolvingUrl(false);
+      }
+    }
+
+    if (coords) {
+      setFormData((prev) => ({ ...prev, coordinates: coords }));
+      validateLocation(coords);
+    } else {
+      setUrlError("Could not extract location from this link. Try copying a different Google Maps link.");
+    }
   };
 
   const handleVibeToggle = (vibe: string) => {
@@ -463,6 +251,7 @@ export function NominationModal({ isOpen, onClose, defaultCityId }: NominationMo
       setShowRequestCity(false);
       setRequestedCity("");
       setCityRequestSubmitted(false);
+      setUrlError(null);
     }, 300);
   };
 
@@ -470,8 +259,9 @@ export function NominationModal({ isOpen, onClose, defaultCityId }: NominationMo
     formData.name &&
     formData.cityId &&
     formData.types.length > 0 &&
-    formData.coordinates &&
-    !locationError;
+    formData.googleMapsUrl &&
+    !locationError &&
+    !urlError;
   const isStep2Valid = formData.description && formData.vibes.length > 0;
 
   return (
@@ -660,7 +450,7 @@ export function NominationModal({ isOpen, onClose, defaultCityId }: NominationMo
                         <select
                           value={formData.cityId}
                           onChange={(e) =>
-                            setFormData({ ...formData, cityId: e.target.value, coordinates: null })
+                            setFormData({ ...formData, cityId: e.target.value, coordinates: null, googleMapsUrl: "" })
                           }
                           disabled={isCityLocked}
                           className={`w-full px-4 py-3 bg-[#0d0d0d] border border-[#272727] rounded-lg text-[#fafafa] focus:outline-none focus:border-[#c8ff00]/50 ${
@@ -718,19 +508,57 @@ export function NominationModal({ isOpen, onClose, defaultCityId }: NominationMo
                         </div>
                       </div>
 
-                      {/* Location Picker */}
+                      {/* Location - Just Google Maps URL input */}
                       <div>
                         <label className="block text-sm font-medium text-[#fafafa] mb-2">
-                          Location *
+                          Google Maps Link *
                         </label>
-                        <LocationPicker
-                          cityId={formData.cityId}
-                          coordinates={formData.coordinates}
-                          googleMapsUrl={formData.googleMapsUrl}
-                          onCoordinatesChange={handleCoordinatesChange}
-                          onGoogleMapsUrlChange={(url) => setFormData((prev) => ({ ...prev, googleMapsUrl: url }))}
-                          error={locationError}
-                        />
+                        <div className="space-y-2">
+                          <div className="relative">
+                            <svg
+                              className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#52525b]"
+                              fill="none"
+                              viewBox="0 0 24 24"
+                              stroke="currentColor"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
+                              />
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
+                              />
+                            </svg>
+                            <input
+                              type="text"
+                              value={formData.googleMapsUrl}
+                              onChange={(e) => handleUrlChange(e.target.value)}
+                              placeholder="Paste Google Maps link here..."
+                              className="w-full pl-10 pr-10 py-3 bg-[#0d0d0d] border border-[#272727] rounded-lg text-[#fafafa] placeholder-[#52525b] text-sm focus:outline-none focus:border-[#c8ff00]/50"
+                            />
+                            {isResolvingUrl && (
+                              <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                                <div className="w-4 h-4 border-2 border-[#c8ff00] border-t-transparent rounded-full animate-spin" />
+                              </div>
+                            )}
+                          </div>
+                          {urlError && <p className="text-xs text-red-400">{urlError}</p>}
+                          {formData.coordinates ? (
+                            <p className="text-xs text-[#c8ff00]">
+                              ✓ Location detected
+                            </p>
+                          ) : (
+                            <p className="text-xs text-[#71717a]">
+                              Go to Google Maps, find the spot, click &quot;Share&quot; → &quot;Copy link&quot; and paste above
+                            </p>
+                          )}
+                          {locationError && <p className="text-xs text-red-400">{locationError}</p>}
+                        </div>
                       </div>
                     </motion.div>
                   )}
