@@ -13,7 +13,19 @@ export type VibeTag =
   | "founders only"
   | "open community"
   | "rooftop vibes"
-  | "quiet zone";
+  | "quiet zone"
+  | "networking"
+  | "casual"
+  | "outdoor seating"
+  | "events"
+  | "pet friendly"
+  | "power outlets"
+  | "meeting rooms"
+  | "24/7 access"
+  | "free parking"
+  | "beginner friendly"
+  | "demo days"
+  | "mentorship";
 
 export interface Upvoter {
   handle: string; // Twitter/X handle
