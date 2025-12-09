@@ -58,6 +58,8 @@ export interface Spot {
   lumaUrl?: string;
   websiteUrl?: string;
   twitterUrl?: string;
+  instagramUrl?: string;
+  linkedinUrl?: string;
   addedBy: string; // Twitter handle
   approved: boolean;
   featured?: boolean;
