@@ -1,0 +1,98 @@
+@import "tailwindcss";
+@import "@fontsource/space-grotesk/400.css";
+@import "@fontsource/space-grotesk/500.css";
+@import "@fontsource/space-grotesk/600.css";
+@import "@fontsource/space-grotesk/700.css";
+
+:root {
+  /* Backgrounds */
+  --bg-dark: #0a0a0b;
+  --bg-card: #131316;
+  --bg-card-hover: #1a1a1f;
+
+  /* Accent Colors */
+  --accent-lime: #c8ff00;
+  --accent-lime-dim: rgba(200, 255, 0, 0.15);
+  --accent-orange: #ff6b35;
+  --accent-cyan: #00d4ff;
+  --accent-purple: #a855f7;
+
+  /* Text */
+  --text-primary: #fafafa;
+  --text-secondary: #71717a;
+  --text-muted: #3f3f46;
+
+  /* Borders */
+  --border: #272727;
+  --border-hover: #3f3f46;
+}
+
+html {
+  color-scheme: dark;
+}
+
+body {
+  background: var(--bg-dark);
+  color: var(--text-primary);
+  font-family: 'Space Grotesk', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-card);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border-hover);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #525252;
+}
+
+/* Glow effects */
+.glow-lime { box-shadow: 0 0 20px rgba(200, 255, 0, 0.4); }
+.glow-orange { box-shadow: 0 0 20px rgba(255, 107, 53, 0.4); }
+.glow-cyan { box-shadow: 0 0 20px rgba(0, 212, 255, 0.4); }
+.glow-purple { box-shadow: 0 0 20px rgba(168, 85, 247, 0.4); }
+
+/* Marker type colors */
+.marker-coworking { color: var(--accent-purple); }
+.marker-hacker-house { color: var(--accent-orange); }
+.marker-cafe { color: var(--accent-cyan); }
+.marker-events { color: var(--accent-lime); }
+
+/* Custom theme colors for Tailwind v4 */
+@theme {
+  /* Backgrounds */
+  --color-bg-dark: #0a0a0b;
+  --color-bg-card: #131316;
+  --color-bg-card-hover: #1a1a1f;
+
+  /* Accent Colors */
+  --color-accent-lime: #c8ff00;
+  --color-accent-orange: #ff6b35;
+  --color-accent-cyan: #00d4ff;
+  --color-accent-purple: #a855f7;
+
+  /* Text */
+  --color-text-primary: #fafafa;
+  --color-text-secondary: #71717a;
+  --color-text-muted: #3f3f46;
+
+  /* Borders */
+  --color-border: #272727;
+  --color-border-hover: #3f3f46;
+
+  /* Legacy dark colors for compatibility */
+  --color-dark-900: #0a0a0b;
+  --color-dark-800: #131316;
+  --color-dark-700: #1a1a1f;
+  --color-dark-600: #232328;
+}
