@@ -46,7 +46,7 @@ export default function CityPage() {
 
   const filteredSpots = useMemo(() => {
     if (activeFilter === "all") return allSpots;
-    return allSpots.filter((spot) => spot.type === activeFilter);
+    return allSpots.filter((spot) => spot.types.includes(activeFilter));
   }, [allSpots, activeFilter]);
 
   // Sort by upvotes

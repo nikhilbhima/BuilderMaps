@@ -90,7 +90,7 @@ export function SpotDetailModal({ spot, isOpen, onClose }: SpotDetailModalProps)
 
   if (!spot) return null;
 
-  const typeConfig = spotTypeConfig[spot.type];
+  const typeConfig = spotTypeConfig[spot.types[0]];
 
   const handleSubmitReview = async () => {
     if (!user) {
@@ -137,7 +137,7 @@ export function SpotDetailModal({ spot, isOpen, onClose }: SpotDetailModalProps)
                   <span className="text-3xl">{typeConfig.emoji}</span>
                   <div>
                     <h2 className="text-xl font-bold text-[#fafafa]">{spot.name}</h2>
-                    <span className="text-sm text-[#71717a] capitalize">{spot.type.replace("-", " ")}</span>
+                    <span className="text-sm text-[#71717a] capitalize">{spot.types.map(t => t.replace("-", " ")).join(" · ")}</span>
                   </div>
                 </div>
                 <button

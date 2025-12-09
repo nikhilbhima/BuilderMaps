@@ -13,7 +13,7 @@ const filters: { value: SpotType | "all"; label: string; emoji: string; color: s
   { value: "coworking", label: "Coworking", emoji: "💻", color: "purple" },
   { value: "hacker-house", label: "Hacker Houses", emoji: "🏠", color: "orange" },
   { value: "cafe", label: "Cafes", emoji: "☕", color: "cyan" },
-  { value: "event-venue", label: "Events", emoji: "🎉", color: "lime" },
+  { value: "community", label: "Community", emoji: "👥", color: "lime" },
 ];
 
 const colorMap: Record<string, { active: string; inactive: string }> = {

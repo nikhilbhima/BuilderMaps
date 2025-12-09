@@ -113,7 +113,7 @@ export function SpotCard({ spot, isSelected, onClick, onExpand, index = 0 }: Spo
   const [localUpvotes, setLocalUpvotes] = useState(spot.upvotes);
   const [showUpvoters, setShowUpvoters] = useState(false);
   const isUpvoted = hasUpvoted(spot.id);
-  const typeConfig = spotTypeConfig[spot.type];
+  const typeConfig = spotTypeConfig[spot.types[0]];
   const colors = colorClasses[typeConfig.color] || colorClasses.purple;
 
   const handleUpvote = (e: React.MouseEvent) => {

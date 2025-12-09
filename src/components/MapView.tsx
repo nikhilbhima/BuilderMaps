@@ -86,7 +86,7 @@ export function MapView({ spots, center, selectedSpot, panTrigger, onSpotSelect,
     // Add new markers
     spots.forEach((spot) => {
       const isSelected = selectedSpot?.id === spot.id;
-      const typeConfig = spotTypeConfig[spot.type];
+      const typeConfig = spotTypeConfig[spot.types[0]];
       const color = typeColorMap[typeConfig.color] || typeColorMap.lime;
 
       // Create custom icon

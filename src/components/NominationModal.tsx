@@ -11,7 +11,7 @@ interface NominationModalProps {
   defaultCityId?: string;
 }
 
-const spotTypes: SpotType[] = ["coworking", "cafe", "hacker-house", "event-venue"];
+const spotTypes: SpotType[] = ["coworking", "cafe", "hacker-house", "community"];
 
 const vibeOptions = [
   "deep focus",
@@ -46,16 +46,57 @@ function getDistanceKm(
   return R * c;
 }
 
+// Extract coordinates from Google Maps URL
+function extractCoordsFromGoogleMapsUrl(url: string): [number, number] | null {
+  try {
+    // Pattern 1: @lat,lng (most common)
+    const atPattern = /@(-?\d+\.?\d*),(-?\d+\.?\d*)/;
+    const atMatch = url.match(atPattern);
+    if (atMatch) {
+      return [parseFloat(atMatch[1]), parseFloat(atMatch[2])];
+    }
+
+    // Pattern 2: ?q=lat,lng or place/lat,lng
+    const qPattern = /[?&]q=(-?\d+\.?\d*),(-?\d+\.?\d*)/;
+    const qMatch = url.match(qPattern);
+    if (qMatch) {
+      return [parseFloat(qMatch[1]), parseFloat(qMatch[2])];
+    }
+
+    // Pattern 3: /place/.../data=...!3d{lat}!4d{lng}
+    const dataPattern = /!3d(-?\d+\.?\d*)!4d(-?\d+\.?\d*)/;
+    const dataMatch = url.match(dataPattern);
+    if (dataMatch) {
+      return [parseFloat(dataMatch[1]), parseFloat(dataMatch[2])];
+    }
+
+    // Pattern 4: ll=lat,lng
+    const llPattern = /[?&]ll=(-?\d+\.?\d*),(-?\d+\.?\d*)/;
+    const llMatch = url.match(llPattern);
+    if (llMatch) {
+      return [parseFloat(llMatch[1]), parseFloat(llMatch[2])];
+    }
+
+    return null;
+  } catch {
+    return null;
+  }
+}
+
 // Location picker component
 function LocationPicker({
   cityId,
   coordinates,
+  googleMapsUrl,
   onCoordinatesChange,
+  onGoogleMapsUrlChange,
   error,
 }: {
   cityId: string;
   coordinates: [number, number] | null;
+  googleMapsUrl: string;
   onCoordinatesChange: (coords: [number, number] | null) => void;
+  onGoogleMapsUrlChange: (url: string) => void;
   error: string | null;
 }) {
   const mapRef = useRef<L.Map | null>(null);
@@ -63,6 +104,7 @@ function LocationPicker({
   const markerRef = useRef<L.Marker | null>(null);
   const [L, setL] = useState<typeof import("leaflet") | null>(null);
   const [isLoaded, setIsLoaded] = useState(false);
+  const [urlError, setUrlError] = useState<string | null>(null);
 
   const city = cities.find((c) => c.id === cityId);
   // City coordinates are [lng, lat], convert to [lat, lng] for Leaflet
@@ -78,6 +120,59 @@ function LocationPicker({
     };
     loadLeaflet();
   }, []);
+
+  const [isResolving, setIsResolving] = useState(false);
+
+  // Handle Google Maps URL change
+  const handleUrlChange = async (url: string) => {
+    onGoogleMapsUrlChange(url);
+    setUrlError(null);
+
+    if (!url.trim()) {
+      onCoordinatesChange(null);
+      return;
+    }
+
+    // Check if it's a valid Google Maps URL
+    const isShortUrl = url.includes("maps.app.goo.gl") || url.includes("goo.gl/maps");
+    const isFullUrl = url.includes("google.com/maps");
+
+    if (!isShortUrl && !isFullUrl) {
+      setUrlError("Please paste a valid Google Maps link");
+      return;
+    }
+
+    // Try to extract coordinates directly first
+    let coords = extractCoordsFromGoogleMapsUrl(url);
+
+    // If it's a short URL and we couldn't extract coords, resolve it
+    if (!coords && isShortUrl) {
+      setIsResolving(true);
+      try {
+        const response = await fetch(`/api/resolve-maps-url?url=${encodeURIComponent(url)}`);
+        if (response.ok) {
+          const data = await response.json();
+          if (data.resolvedUrl) {
+            coords = extractCoordsFromGoogleMapsUrl(data.resolvedUrl);
+          }
+        }
+      } catch (err) {
+        console.error("Failed to resolve short URL:", err);
+      } finally {
+        setIsResolving(false);
+      }
+    }
+
+    if (coords) {
+      onCoordinatesChange(coords);
+      // Pan map to the location
+      if (mapRef.current) {
+        mapRef.current.flyTo(coords, 16, { duration: 0.8 });
+      }
+    } else {
+      setUrlError("Could not extract location from this link. Try copying a different Google Maps link.");
+    }
+  };
 
   // Initialize map
   useEffect(() => {
@@ -103,12 +198,6 @@ function LocationPicker({
         maxZoom: 20,
       }
     ).addTo(mapRef.current);
-
-    // Add click handler
-    mapRef.current.on("click", (e: L.LeafletMouseEvent) => {
-      const { lat, lng } = e.latlng;
-      onCoordinatesChange([lat, lng]);
-    });
 
     setIsLoaded(true);
 
@@ -168,6 +257,8 @@ function LocationPicker({
     if (mapRef.current && cityCenter[0] !== 0) {
       mapRef.current.flyTo(cityCenter, 12, { duration: 0.8 });
       onCoordinatesChange(null);
+      onGoogleMapsUrlChange("");
+      setUrlError(null);
     }
   }, [cityId]);
 
@@ -181,21 +272,62 @@ function LocationPicker({
 
   return (
     <div className="space-y-2">
+      {/* Google Maps URL input */}
+      <div className="relative">
+        <svg
+          className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#52525b]"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
+          />
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
+          />
+        </svg>
+        <input
+          type="text"
+          value={googleMapsUrl}
+          onChange={(e) => handleUrlChange(e.target.value)}
+          placeholder="Paste Google Maps link here..."
+          className="w-full pl-10 pr-10 py-2.5 bg-[#0d0d0d] border border-[#272727] rounded-lg text-[#fafafa] placeholder-[#52525b] text-sm focus:outline-none focus:border-[#c8ff00]/50"
+        />
+        {isResolving && (
+          <div className="absolute right-3 top-1/2 -translate-y-1/2">
+            <div className="w-4 h-4 border-2 border-[#c8ff00] border-t-transparent rounded-full animate-spin" />
+          </div>
+        )}
+      </div>
+      {urlError && <p className="text-xs text-red-400">{urlError}</p>}
+
+      {/* Map preview */}
       <div
         ref={mapContainerRef}
-        className="w-full h-48 rounded-lg overflow-hidden border border-[#272727]"
+        className="w-full h-40 rounded-lg overflow-hidden border border-[#272727]"
       />
       {!isLoaded && (
         <div className="absolute inset-0 bg-[#0d0d0d] flex items-center justify-center">
           <div className="w-6 h-6 border-2 border-[#c8ff00] border-t-transparent rounded-full animate-spin" />
         </div>
       )}
+
+      {/* Selected location info */}
       {coordinates ? (
-        <p className="text-xs text-[#71717a]">
-          📍 {coordinates[0].toFixed(5)}, {coordinates[1].toFixed(5)}
+        <p className="text-xs text-[#c8ff00]">
+          ✓ Location detected: {coordinates[0].toFixed(5)}, {coordinates[1].toFixed(5)}
         </p>
       ) : (
-        <p className="text-xs text-[#71717a]">Click on the map to pin the exact location</p>
+        <p className="text-xs text-[#71717a]">
+          Go to Google Maps, find the spot, click &quot;Share&quot; → &quot;Copy link&quot; and paste above
+        </p>
       )}
       {error && <p className="text-xs text-red-400">{error}</p>}
       <style jsx global>{`
@@ -212,14 +344,15 @@ export function NominationModal({ isOpen, onClose, defaultCityId }: NominationMo
   const [formData, setFormData] = useState({
     name: "",
     cityId: defaultCityId || "",
-    type: "" as SpotType | "",
+    types: [] as SpotType[],
     description: "",
     vibes: [] as string[],
     coordinates: null as [number, number] | null,
     googleMapsUrl: "",
     websiteUrl: "",
     twitterHandle: "",
-    nominatorTwitter: "",
+    instagramHandle: "",
+    linkedinUrl: "",
   });
   const [step, setStep] = useState(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -304,14 +437,15 @@ export function NominationModal({ isOpen, onClose, defaultCityId }: NominationMo
       setFormData({
         name: "",
         cityId: defaultCityId || "",
-        type: "" as SpotType | "",
+        types: [],
         description: "",
         vibes: [],
         coordinates: null,
         googleMapsUrl: "",
         websiteUrl: "",
         twitterHandle: "",
-        nominatorTwitter: "",
+        instagramHandle: "",
+        linkedinUrl: "",
       });
       setStep(1);
       setIsSubmitted(false);
@@ -325,7 +459,7 @@ export function NominationModal({ isOpen, onClose, defaultCityId }: NominationMo
   const isStep1Valid =
     formData.name &&
     formData.cityId &&
-    formData.type &&
+    formData.types.length > 0 &&
     formData.coordinates &&
     !locationError;
   const isStep2Valid = formData.description && formData.vibes.length > 0;
@@ -544,18 +678,24 @@ export function NominationModal({ isOpen, onClose, defaultCityId }: NominationMo
 
                       <div>
                         <label className="block text-sm font-medium text-[#fafafa] mb-2">
-                          Type *
+                          Type * <span className="text-[#71717a] font-normal">(select all that apply)</span>
                         </label>
                         <div className="grid grid-cols-2 gap-2">
                           {spotTypes.map((type) => {
                             const config = spotTypeConfig[type];
+                            const isSelected = formData.types.includes(type);
                             return (
                               <button
                                 key={type}
                                 type="button"
-                                onClick={() => setFormData({ ...formData, type })}
+                                onClick={() => setFormData((prev) => ({
+                                  ...prev,
+                                  types: isSelected
+                                    ? prev.types.filter((t) => t !== type)
+                                    : [...prev.types, type],
+                                }))}
                                 className={`flex items-center gap-2 px-4 py-3 rounded-lg border transition-colors ${
-                                  formData.type === type
+                                  isSelected
                                     ? "bg-[#c8ff00]/15 border-[#c8ff00]/50 text-[#fafafa]"
                                     : "bg-[#0d0d0d] border-[#272727] text-[#71717a] hover:border-[#3f3f46]"
                                 }`}
@@ -571,12 +711,14 @@ export function NominationModal({ isOpen, onClose, defaultCityId }: NominationMo
                       {/* Location Picker */}
                       <div>
                         <label className="block text-sm font-medium text-[#fafafa] mb-2">
-                          Location * <span className="text-[#71717a] font-normal">(click map to pin)</span>
+                          Location *
                         </label>
                         <LocationPicker
                           cityId={formData.cityId}
                           coordinates={formData.coordinates}
+                          googleMapsUrl={formData.googleMapsUrl}
                           onCoordinatesChange={handleCoordinatesChange}
+                          onGoogleMapsUrlChange={(url) => setFormData((prev) => ({ ...prev, googleMapsUrl: url }))}
                           error={locationError}
                         />
                       </div>
@@ -593,14 +735,14 @@ export function NominationModal({ isOpen, onClose, defaultCityId }: NominationMo
                     >
                       <div>
                         <label className="block text-sm font-medium text-[#fafafa] mb-2">
-                          Description *
+                          Brief Description *
                         </label>
                         <textarea
                           value={formData.description}
                           onChange={(e) =>
                             setFormData({ ...formData, description: e.target.value })
                           }
-                          placeholder="What makes this spot great for builders?"
+                          placeholder="What makes this spot great for builders? (e.g., fast wifi, great coffee, friendly community)"
                           rows={3}
                           className="w-full px-4 py-3 bg-[#0d0d0d] border border-[#272727] rounded-lg text-[#fafafa] placeholder-[#52525b] resize-none focus:outline-none focus:border-[#c8ff00]/50"
                         />
@@ -640,21 +782,6 @@ export function NominationModal({ isOpen, onClose, defaultCityId }: NominationMo
                     >
                       <div>
                         <label className="block text-sm font-medium text-[#fafafa] mb-2">
-                          Google Maps Link
-                        </label>
-                        <input
-                          type="url"
-                          value={formData.googleMapsUrl}
-                          onChange={(e) =>
-                            setFormData({ ...formData, googleMapsUrl: e.target.value })
-                          }
-                          placeholder="https://maps.google.com/..."
-                          className="w-full px-4 py-3 bg-[#0d0d0d] border border-[#272727] rounded-lg text-[#fafafa] placeholder-[#52525b] focus:outline-none focus:border-[#c8ff00]/50"
-                        />
-                      </div>
-
-                      <div>
-                        <label className="block text-sm font-medium text-[#fafafa] mb-2">
                           Website
                         </label>
                         <input
@@ -670,7 +797,7 @@ export function NominationModal({ isOpen, onClose, defaultCityId }: NominationMo
 
                       <div>
                         <label className="block text-sm font-medium text-[#fafafa] mb-2">
-                          Spot&apos;s X Handle
+                          X (Twitter)
                         </label>
                         <div className="relative">
                           <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[#52525b]">
@@ -691,10 +818,9 @@ export function NominationModal({ isOpen, onClose, defaultCityId }: NominationMo
                         </div>
                       </div>
 
-                      <div className="pt-4 border-t border-[#272727]">
+                      <div>
                         <label className="block text-sm font-medium text-[#fafafa] mb-2">
-                          Your X Handle{" "}
-                          <span className="text-[#71717a] font-normal">(for credit)</span>
+                          Instagram
                         </label>
                         <div className="relative">
                           <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[#52525b]">
@@ -702,17 +828,32 @@ export function NominationModal({ isOpen, onClose, defaultCityId }: NominationMo
                           </span>
                           <input
                             type="text"
-                            value={formData.nominatorTwitter}
+                            value={formData.instagramHandle}
                             onChange={(e) =>
                               setFormData({
                                 ...formData,
-                                nominatorTwitter: e.target.value.replace("@", ""),
+                                instagramHandle: e.target.value.replace("@", ""),
                               })
                             }
-                            placeholder="yourhandle"
+                            placeholder="spothandle"
                             className="w-full pl-8 pr-4 py-3 bg-[#0d0d0d] border border-[#272727] rounded-lg text-[#fafafa] placeholder-[#52525b] focus:outline-none focus:border-[#c8ff00]/50"
                           />
                         </div>
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-[#fafafa] mb-2">
+                          LinkedIn
+                        </label>
+                        <input
+                          type="url"
+                          value={formData.linkedinUrl}
+                          onChange={(e) =>
+                            setFormData({ ...formData, linkedinUrl: e.target.value })
+                          }
+                          placeholder="https://linkedin.com/company/..."
+                          className="w-full px-4 py-3 bg-[#0d0d0d] border border-[#272727] rounded-lg text-[#fafafa] placeholder-[#52525b] focus:outline-none focus:border-[#c8ff00]/50"
+                        />
                       </div>
                     </motion.div>
                   )}

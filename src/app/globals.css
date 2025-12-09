@@ -67,7 +67,7 @@ body {
 .marker-coworking { color: var(--accent-purple); }
 .marker-hacker-house { color: var(--accent-orange); }
 .marker-cafe { color: var(--accent-cyan); }
-.marker-events { color: var(--accent-lime); }
+.marker-community { color: var(--accent-lime); }
 
 /* Hide scrollbar for horizontal scroll areas */
 .scrollbar-hide {
@@ -83,6 +83,11 @@ body {
   button, a {
     -webkit-tap-highlight-color: transparent;
   }
+}
+
+/* Hide Leaflet attribution */
+.leaflet-control-attribution {
+  display: none !important;
 }
 
 /* Custom theme colors for Tailwind v4 */
