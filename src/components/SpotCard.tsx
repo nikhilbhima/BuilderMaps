@@ -9,7 +9,6 @@ interface SpotCardProps {
   spot: Spot;
   isSelected?: boolean;
   onClick?: () => void;
-  onExpand?: () => void;
   index?: number;
 }
 
@@ -126,7 +125,7 @@ function UpvotersModal({
   );
 }
 
-export function SpotCard({ spot, isSelected, onClick, onExpand, index = 0 }: SpotCardProps) {
+export function SpotCard({ spot, isSelected, onClick, index = 0 }: SpotCardProps) {
   const { hasUpvoted, toggleUpvote, user } = useApp();
   const [localUpvotes, setLocalUpvotes] = useState(spot.upvotes);
   const [showUpvoters, setShowUpvoters] = useState(false);
@@ -149,11 +148,6 @@ export function SpotCard({ spot, isSelected, onClick, onExpand, index = 0 }: Spo
   const handleShowUpvoters = (e: React.MouseEvent) => {
     e.stopPropagation();
     setShowUpvoters(true);
-  };
-
-  const handleExpand = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    onExpand?.();
   };
 
   return (
@@ -185,16 +179,6 @@ export function SpotCard({ spot, isSelected, onClick, onExpand, index = 0 }: Spo
                 Featured
               </span>
             )}
-            {/* Expand button */}
-            <button
-              onClick={handleExpand}
-              className="p-1.5 text-[#71717a] hover:text-[#c8ff00] hover:bg-[#272727] rounded-lg transition-colors"
-              aria-label="View spot details"
-            >
-              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />
-              </svg>
-            </button>
           </div>
         </div>
 

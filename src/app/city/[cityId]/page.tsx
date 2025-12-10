@@ -412,7 +412,6 @@ export default function CityPage() {
                         index={index}
                         isSelected={selectedSpot?.id === spot.id}
                         onClick={() => setSelectedSpot(spot)}
-                        onExpand={() => setSelectedSpot(spot)}
                       />
                     ))
                   ) : (
