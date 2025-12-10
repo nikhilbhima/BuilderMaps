@@ -1,11 +1,9 @@
 import NextAuth from "next-auth";
 import Twitter from "next-auth/providers/twitter";
 import LinkedIn from "next-auth/providers/linkedin";
-import Credentials from "next-auth/providers/credentials";
 import { db } from "./db";
 import { users } from "./schema";
 import { eq } from "drizzle-orm";
-import bcrypt from "bcryptjs";
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   providers: [
@@ -16,41 +14,6 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     LinkedIn({
       clientId: process.env.LINKEDIN_CLIENT_ID!,
       clientSecret: process.env.LINKEDIN_CLIENT_SECRET!,
-    }),
-    Credentials({
-      name: "Email",
-      credentials: {
-        email: { label: "Email", type: "email" },
-        password: { label: "Password", type: "password" },
-      },
-      async authorize(credentials) {
-        if (!credentials?.email || !credentials?.password) {
-          return null;
-        }
-
-        const email = credentials.email as string;
-        const password = credentials.password as string;
-
-        const user = await db.query.users.findFirst({
-          where: eq(users.email, email),
-        });
-
-        if (!user || !user.passwordHash) {
-          return null;
-        }
-
-        const isValid = await bcrypt.compare(password, user.passwordHash);
-        if (!isValid) {
-          return null;
-        }
-
-        return {
-          id: user.id,
-          email: user.email,
-          name: user.displayName || user.handle,
-          image: user.avatarUrl,
-        };
-      },
     }),
   ],
   callbacks: {
@@ -98,7 +61,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
 
         if (dbUser) {
           session.user.handle = dbUser.handle;
-          session.user.provider = dbUser.provider as "x" | "linkedin" | "email";
+          session.user.provider = dbUser.provider as "x" | "linkedin";
         }
       }
       return session;
@@ -131,7 +94,7 @@ declare module "next-auth" {
       name?: string | null;
       image?: string | null;
       handle?: string;
-      provider?: "x" | "linkedin" | "email";
+      provider?: "x" | "linkedin";
     };
   }
 }

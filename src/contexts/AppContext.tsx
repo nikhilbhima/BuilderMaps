@@ -15,7 +15,7 @@ interface User {
   handle: string;
   displayName?: string;
   avatarUrl?: string;
-  provider: "x" | "linkedin" | "email";
+  provider: "x" | "linkedin";
 }
 
 interface AppContextType {
@@ -45,7 +45,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
         handle: session.user.handle || session.user.name || "user",
         displayName: session.user.name || undefined,
         avatarUrl: session.user.image || undefined,
-        provider: session.user.provider || "email",
+        provider: session.user.provider || "x",
       }
     : null;
 
