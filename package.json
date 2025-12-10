@@ -10,19 +10,26 @@
   },
   "dependencies": {
     "@fontsource/space-grotesk": "^5.2.10",
+    "@neondatabase/serverless": "^1.0.2",
     "@tailwindcss/postcss": "^4.1.17",
     "autoprefixer": "^10.4.22",
+    "bcryptjs": "^3.0.3",
+    "drizzle-orm": "^0.45.0",
     "framer-motion": "^12.23.25",
     "next": "^16.0.8",
+    "next-auth": "^5.0.0-beta.30",
     "postcss": "^8.5.6",
     "react": "^19.2.1",
     "react-dom": "^19.2.1",
     "tailwindcss": "^4.1.17"
   },
   "devDependencies": {
+    "@types/bcryptjs": "^2.4.6",
     "@types/node": "^24.10.2",
     "@types/react": "^19.2.7",
     "@types/react-dom": "^19.2.3",
+    "drizzle-kit": "^0.31.8",
+    "tsx": "^4.21.0",
     "typescript": "^5.9.3"
   }
 }

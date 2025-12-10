@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from "next";
+import { Providers } from "@/components/Providers";
 import { AppProvider } from "@/contexts/AppContext";
 import { LoginModal } from "@/components/LoginModal";
 import "./globals.css";
@@ -53,10 +54,12 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className="antialiased bg-dark-900 min-h-screen">
-        <AppProvider>
-          {children}
-          <LoginModal />
-        </AppProvider>
+        <Providers>
+          <AppProvider>
+            {children}
+            <LoginModal />
+          </AppProvider>
+        </Providers>
       </body>
     </html>
   );

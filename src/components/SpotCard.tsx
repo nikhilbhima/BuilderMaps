@@ -134,12 +134,16 @@ export function SpotCard({ spot, isSelected, onClick, onExpand, index = 0 }: Spo
   const typeConfig = spotTypeConfig[spot.types[0]];
   const colors = colorClasses[typeConfig.color] || colorClasses.purple;
 
-  const handleUpvote = (e: React.MouseEvent) => {
+  const handleUpvote = async (e: React.MouseEvent) => {
     e.stopPropagation();
-    const newState = toggleUpvote(spot.id);
-    if (user) {
-      setLocalUpvotes((prev) => newState ? prev + 1 : prev - 1);
+    if (!user) {
+      toggleUpvote(spot.id);
+      return;
     }
+    // Optimistic update based on current state
+    const willBeUpvoted = !isUpvoted;
+    setLocalUpvotes((prev) => willBeUpvoted ? prev + 1 : prev - 1);
+    await toggleUpvote(spot.id);
   };
 
   const handleShowUpvoters = (e: React.MouseEvent) => {
