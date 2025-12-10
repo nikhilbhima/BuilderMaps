@@ -162,20 +162,27 @@ export function AppProvider({ children }: { children: ReactNode }) {
       try {
         if (willBeUpvoted) {
           // Add upvote
-          const { error } = await supabase.from("upvotes").insert({
+          console.log("Adding upvote:", { user_id: user.id, spot_id: spotId });
+          const { error, data } = await supabase.from("upvotes").insert({
             user_id: user.id,
             spot_id: spotId,
-          });
+          }).select();
+
+          console.log("Insert result:", { error, data });
 
           // Ignore duplicate key error (23505) - user already upvoted
           if (error && error.code !== "23505") throw error;
         } else {
           // Remove upvote
-          const { error } = await supabase
+          console.log("Removing upvote:", { user_id: user.id, spot_id: spotId });
+          const { error, data } = await supabase
             .from("upvotes")
             .delete()
             .eq("user_id", user.id)
-            .eq("spot_id", spotId);
+            .eq("spot_id", spotId)
+            .select();
+
+          console.log("Delete result:", { error, data });
 
           if (error) throw error;
         }
