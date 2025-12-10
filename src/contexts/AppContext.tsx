@@ -161,19 +161,14 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
       try {
         if (willBeUpvoted) {
-          // Add upvote - use upsert to prevent duplicates
-          const { error } = await supabase.from("upvotes").upsert(
-            {
-              user_id: user.id,
-              spot_id: spotId,
-            },
-            {
-              onConflict: "user_id,spot_id",
-              ignoreDuplicates: true,
-            }
-          );
+          // Add upvote
+          const { error } = await supabase.from("upvotes").insert({
+            user_id: user.id,
+            spot_id: spotId,
+          });
 
-          if (error) throw error;
+          // Ignore duplicate key error (23505) - user already upvoted
+          if (error && error.code !== "23505") throw error;
         } else {
           // Remove upvote
           const { error } = await supabase
