@@ -35,7 +35,7 @@ const securityHeaders = [
       "style-src 'self' 'unsafe-inline'", // Required for styled components
       "img-src 'self' data: https: blob:",
       "font-src 'self' data:",
-      "connect-src 'self' https://maps.google.com https://www.google.com https://maps.app.goo.gl https://goo.gl https://*.supabase.co",
+      "connect-src 'self' https://maps.google.com https://www.google.com https://maps.app.goo.gl https://goo.gl https://lmrgeobdkmyzkcxhoqrl.supabase.co https://*.supabase.co wss://*.supabase.co",
       "frame-ancestors 'none'",
       "base-uri 'self'",
       "form-action 'self'",
