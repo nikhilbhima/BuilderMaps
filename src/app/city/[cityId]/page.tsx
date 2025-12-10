@@ -13,10 +13,12 @@ import { NominationModal } from "@/components/NominationModal";
 import { InlineReviewForm } from "@/components/InlineReviewForm";
 import { cities } from "@/data/cities";
 import { getSpotsByCity, Spot, SpotType, spotTypeConfig } from "@/data/spots";
+import { useApp } from "@/contexts/AppContext";
 
 // Inline detail panel component
 function SpotDetailPanel({ spot, onClose }: { spot: Spot; onClose: () => void }) {
   const typeConfig = spotTypeConfig[spot.types[0]];
+  const { getSpotUpvoteCount } = useApp();
 
   return (
     <motion.div
@@ -83,7 +85,7 @@ function SpotDetailPanel({ spot, onClose }: { spot: Spot; onClose: () => void })
             <svg className="w-4 h-4 text-[#c8ff00]" fill="currentColor" viewBox="0 0 20 20">
               <path d="M2 10.5a1.5 1.5 0 113 0v6a1.5 1.5 0 01-3 0v-6zM6 10.333v5.43a2 2 0 001.106 1.79l.05.025A4 4 0 008.943 18h5.416a2 2 0 001.962-1.608l1.2-6A2 2 0 0015.56 8H12V4a2 2 0 00-2-2 1 1 0 00-1 1v.667a4 4 0 01-.8 2.4L6.8 7.933a4 4 0 00-.8 2.4z" />
             </svg>
-            <span className="text-sm font-medium">{spot.upvotes}</span>
+            <span className="text-sm font-medium">{getSpotUpvoteCount(spot.id)}</span>
             <span className="text-xs text-[#71717a]">upvotes</span>
           </div>
         </div>
@@ -247,6 +249,7 @@ function SpotDetailPanel({ spot, onClose }: { spot: Spot; onClose: () => void })
 export default function CityPage() {
   const params = useParams();
   const cityId = params.cityId as string;
+  const { spotUpvoteCounts } = useApp();
 
   const city = cities.find((c) => c.id === cityId);
   const allSpots = getSpotsByCity(cityId);
@@ -260,10 +263,14 @@ export default function CityPage() {
     return allSpots.filter((spot) => spot.types.includes(activeFilter));
   }, [allSpots, activeFilter]);
 
-  // Sort by upvotes
+  // Sort by upvotes (using real counts from database)
   const sortedSpots = useMemo(() => {
-    return [...filteredSpots].sort((a, b) => b.upvotes - a.upvotes);
-  }, [filteredSpots]);
+    return [...filteredSpots].sort((a, b) => {
+      const countA = spotUpvoteCounts[a.id] || 0;
+      const countB = spotUpvoteCounts[b.id] || 0;
+      return countB - countA;
+    });
+  }, [filteredSpots, spotUpvoteCounts]);
 
   if (!city) {
     return (

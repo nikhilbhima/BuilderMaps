@@ -31,6 +31,8 @@ interface AppContextType {
   toggleUpvote: (spotId: string) => Promise<boolean>;
   hasUpvoted: (spotId: string) => boolean;
   refreshUpvotes: () => Promise<void>;
+  spotUpvoteCounts: Record<string, number>;
+  getSpotUpvoteCount: (spotId: string) => number;
 }
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
@@ -60,6 +62,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [isLoading, setIsLoading] = useState(true);
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const [upvotedSpots, setUpvotedSpots] = useState<Set<string>>(new Set());
+  const [spotUpvoteCounts, setSpotUpvoteCounts] = useState<Record<string, number>>({});
 
   // Memoize the Supabase client to prevent recreation on every render
   const supabase = useMemo(() => createClient(), []);
@@ -83,6 +86,30 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
     return () => subscription.unsubscribe();
   }, [supabase]);
+
+  // Fetch all spot upvote counts
+  const fetchUpvoteCounts = useCallback(async () => {
+    try {
+      const { data, error } = await supabase
+        .from("upvotes")
+        .select("spot_id");
+
+      if (!error && data) {
+        const counts: Record<string, number> = {};
+        data.forEach((row) => {
+          counts[row.spot_id] = (counts[row.spot_id] || 0) + 1;
+        });
+        setSpotUpvoteCounts(counts);
+      }
+    } catch (error) {
+      console.error("Failed to fetch upvote counts:", error);
+    }
+  }, [supabase]);
+
+  // Fetch upvote counts on mount
+  useEffect(() => {
+    fetchUpvoteCounts();
+  }, [fetchUpvoteCounts]);
 
   // Fetch user's upvotes when logged in
   const refreshUpvotes = useCallback(async () => {
@@ -140,6 +167,13 @@ export function AppProvider({ children }: { children: ReactNode }) {
     [upvotedSpots]
   );
 
+  const getSpotUpvoteCount = useCallback(
+    (spotId: string) => {
+      return spotUpvoteCounts[spotId] || 0;
+    },
+    [spotUpvoteCounts]
+  );
+
   const toggleUpvote = useCallback(
     async (spotId: string): Promise<boolean> => {
       if (!user) {
@@ -158,6 +192,12 @@ export function AppProvider({ children }: { children: ReactNode }) {
         }
         return newSet;
       });
+
+      // Optimistic count update
+      setSpotUpvoteCounts((prev) => ({
+        ...prev,
+        [spotId]: Math.max(0, (prev[spotId] || 0) + (willBeUpvoted ? 1 : -1)),
+      }));
 
       try {
         if (willBeUpvoted) {
@@ -199,6 +239,11 @@ export function AppProvider({ children }: { children: ReactNode }) {
           }
           return newSet;
         });
+        // Revert count
+        setSpotUpvoteCounts((prev) => ({
+          ...prev,
+          [spotId]: Math.max(0, (prev[spotId] || 0) + (willBeUpvoted ? -1 : 1)),
+        }));
         return !willBeUpvoted;
       }
     },
@@ -218,6 +263,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
         toggleUpvote,
         hasUpvoted,
         refreshUpvotes,
+        spotUpvoteCounts,
+        getSpotUpvoteCount,
       }}
     >
       {children}

@@ -126,15 +126,15 @@ function UpvotersModal({
 }
 
 export function SpotCard({ spot, isSelected, onClick, index = 0 }: SpotCardProps) {
-  const { hasUpvoted, toggleUpvote, user } = useApp();
+  const { hasUpvoted, toggleUpvote, user, getSpotUpvoteCount } = useApp();
   const [showUpvoters, setShowUpvoters] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
   const isUpvoted = hasUpvoted(spot.id);
   const typeConfig = spotTypeConfig[spot.types[0]];
   const colors = colorClasses[typeConfig.color] || colorClasses.purple;
 
-  // Calculate display count: base count + adjustment based on user's upvote state
-  const displayUpvotes = spot.upvotes + (isUpvoted ? 1 : 0);
+  // Get real upvote count from database
+  const displayUpvotes = getSpotUpvoteCount(spot.id);
 
   const handleUpvote = async (e: React.MouseEvent) => {
     e.stopPropagation();
