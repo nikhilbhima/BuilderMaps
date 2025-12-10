@@ -1,7 +1,7 @@
 {
   "name": "Builder Maps",
   "short_name": "BuilderMaps",
-  "description": "Discover coworking spaces, hacker houses, cafes, and event venues where the builder community gathers",
+  "description": "Discover coworking spaces, hacker houses, cafes, and communities where the builder community gathers",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#0d0d0d",

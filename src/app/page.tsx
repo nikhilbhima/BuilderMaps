@@ -39,7 +39,7 @@ export default function Home() {
                 </span>
               </h1>
               <p className="text-[#71717a] text-lg sm:text-xl max-w-2xl mx-auto">
-                Discover coworking spaces, hacker houses, cafes, and event venues
+                Discover coworking spaces, hacker houses, cafes, and communities
                 where founders and developers gather in any city.
               </p>
             </motion.div>
