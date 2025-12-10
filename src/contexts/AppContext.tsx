@@ -132,13 +132,32 @@ export function AppProvider({ children }: { children: ReactNode }) {
     }
   }, [supabaseUser, supabase]);
 
+  // Sync user data to users table when logged in
+  const syncUserToDb = useCallback(async () => {
+    if (!supabaseUser || !user) return;
+
+    try {
+      await supabase.from("users").upsert({
+        id: user.id,
+        handle: user.handle,
+        display_name: user.displayName || null,
+        provider: user.provider === "x" ? "twitter" : user.provider,
+        avatar_url: user.avatarUrl || null,
+        updated_at: new Date().toISOString(),
+      }, { onConflict: "id" });
+    } catch (error) {
+      console.error("Failed to sync user:", error);
+    }
+  }, [supabaseUser, user, supabase]);
+
   useEffect(() => {
     if (supabaseUser) {
       refreshUpvotes();
+      syncUserToDb();
     } else {
       setUpvotedSpots(new Set());
     }
-  }, [supabaseUser, refreshUpvotes]);
+  }, [supabaseUser, refreshUpvotes, syncUserToDb]);
 
   const openLoginModal = useCallback(() => setIsLoginModalOpen(true), []);
   const closeLoginModal = useCallback(() => setIsLoginModalOpen(false), []);

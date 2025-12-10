@@ -1,9 +1,16 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Spot, spotTypeConfig } from "@/data/spots";
 import { useApp } from "@/contexts/AppContext";
+
+interface Upvoter {
+  handle: string;
+  displayName?: string;
+  provider?: "x" | "linkedin";
+  avatarUrl?: string;
+}
 
 interface SpotCardProps {
   spot: Spot;
@@ -35,14 +42,46 @@ const colorClasses: Record<string, { badge: string; text: string }> = {
 function UpvotersModal({
   isOpen,
   onClose,
-  upvoters,
+  spotId,
   spotName,
+  upvoteCount,
 }: {
   isOpen: boolean;
   onClose: () => void;
-  upvoters: { handle: string; displayName?: string; provider?: "x" | "linkedin" }[];
+  spotId: string;
   spotName: string;
+  upvoteCount: number;
 }) {
+  const [upvoters, setUpvoters] = useState<Upvoter[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const fetchUpvoters = async () => {
+      setIsLoading(true);
+      setError(null);
+      try {
+        const res = await fetch(`/api/spot-upvoters?spotId=${spotId}`);
+        const data = await res.json();
+
+        if (!res.ok) {
+          setError(data.error || "Failed to fetch upvoters");
+          return;
+        }
+
+        setUpvoters(data.upvoters || []);
+      } catch {
+        setError("Failed to load upvoters");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchUpvoters();
+  }, [isOpen, spotId]);
+
   return (
     <AnimatePresence>
       {isOpen && (
@@ -76,19 +115,34 @@ function UpvotersModal({
                 </button>
               </div>
               <p className="text-sm text-[#71717a] mt-1">
-                {upvoters.length} people upvoted {spotName}
+                {upvoteCount} {upvoteCount === 1 ? "person" : "people"} upvoted {spotName}
               </p>
             </div>
             <div className="max-h-64 overflow-y-auto p-2">
-              {upvoters.map((upvoter) => {
-                const provider = upvoter.provider || "x"; // Default to X for backward compatibility
+              {isLoading && (
+                <div className="flex items-center justify-center py-8">
+                  <div className="w-6 h-6 border-2 border-[#c8ff00] border-t-transparent rounded-full animate-spin" />
+                </div>
+              )}
+              {error && (
+                <div className="text-center py-8 text-[#71717a] text-sm">
+                  {error}
+                </div>
+              )}
+              {!isLoading && !error && upvoters.length === 0 && (
+                <div className="text-center py-8 text-[#71717a] text-sm">
+                  No upvoters yet
+                </div>
+              )}
+              {!isLoading && !error && upvoters.map((upvoter, index) => {
+                const provider = upvoter.provider || "x";
                 const profileUrl = provider === "linkedin"
                   ? `https://linkedin.com/in/${upvoter.handle}`
                   : `https://x.com/${upvoter.handle}`;
 
                 return (
                   <a
-                    key={upvoter.handle}
+                    key={`${upvoter.handle}-${index}`}
                     href={profileUrl}
                     target="_blank"
                     rel="noopener noreferrer"
@@ -222,30 +276,16 @@ export function SpotCard({ spot, isSelected, onClick, index = 0 }: SpotCardProps
               <span className="text-[#fafafa] font-medium font-mono">{displayUpvotes}</span>
             </motion.button>
 
-            {/* Upvoters display - clickable to show list */}
-            {spot.upvoters && spot.upvoters.length > 0 && (
+            {/* Upvoters display - clickable to show list (only for logged-in users) */}
+            {displayUpvotes > 0 && user && (
               <button
                 onClick={handleShowUpvoters}
-                className="flex items-center hover:opacity-80 transition-opacity"
+                className="flex items-center gap-1.5 text-xs text-[#71717a] hover:text-[#fafafa] transition-colors"
               >
-                <div className="flex -space-x-1.5">
-                  {spot.upvoters.slice(0, 3).map((upvoter, i) => (
-                    <div
-                      key={upvoter.handle}
-                      className="relative"
-                      style={{ zIndex: 3 - i }}
-                    >
-                      <div className="w-6 h-6 rounded-full bg-[#272727] border-2 border-[#131316] flex items-center justify-center text-[10px] font-medium text-[#c8ff00]">
-                        {upvoter.displayName?.[0]?.toUpperCase() || upvoter.handle[0].toUpperCase()}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-                {spot.upvoters.length > 3 && (
-                  <span className="ml-1.5 text-xs text-[#52525b]">
-                    +{spot.upvoters.length - 3}
-                  </span>
-                )}
+                <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                </svg>
+                <span>View</span>
               </button>
             )}
           </div>
@@ -313,14 +353,13 @@ export function SpotCard({ spot, isSelected, onClick, index = 0 }: SpotCardProps
       </motion.div>
 
       {/* Upvoters Modal */}
-      {spot.upvoters && (
-        <UpvotersModal
-          isOpen={showUpvoters}
-          onClose={() => setShowUpvoters(false)}
-          upvoters={spot.upvoters}
-          spotName={spot.name}
-        />
-      )}
+      <UpvotersModal
+        isOpen={showUpvoters}
+        onClose={() => setShowUpvoters(false)}
+        spotId={spot.id}
+        spotName={spot.name}
+        upvoteCount={displayUpvotes}
+      />
     </>
   );
 }
