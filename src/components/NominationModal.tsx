@@ -211,21 +211,61 @@ export function NominationModal({ isOpen, onClose, defaultCityId }: NominationMo
 
   const handleSubmit = async () => {
     setIsSubmitting(true);
-    // Simulate submission delay
-    await new Promise((resolve) => setTimeout(resolve, 1500));
 
-    // In production, this would submit to an API
+    try {
+      const response = await fetch("/api/nominations", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: formData.name,
+          cityId: formData.cityId,
+          types: formData.types,
+          description: formData.description,
+          vibes: formData.vibes,
+          lng: formData.coordinates?.[1] || null,
+          lat: formData.coordinates?.[0] || null,
+          googleMapsUrl: formData.googleMapsUrl,
+          websiteUrl: formData.websiteUrl || null,
+          twitterHandle: formData.twitterHandle || null,
+          instagramHandle: formData.instagramHandle || null,
+          linkedinUrl: formData.linkedinUrl || null,
+        }),
+      });
 
-    setIsSubmitting(false);
-    setIsSubmitted(true);
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.error || "Failed to submit nomination");
+      }
+
+      setIsSubmitted(true);
+    } catch (error) {
+      console.error("Failed to submit nomination:", error);
+      alert("Failed to submit nomination. Please try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleRequestCity = async () => {
     if (!requestedCity.trim()) return;
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-    // In production, submit to API
-    setCityRequestSubmitted(true);
+
+    try {
+      const response = await fetch("/api/city-requests", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ cityName: requestedCity }),
+      });
+
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.error || "Failed to submit city request");
+      }
+
+      setCityRequestSubmitted(true);
+    } catch (error) {
+      console.error("Failed to submit city request:", error);
+      alert("Failed to submit city request. Please try again.");
+    }
   };
 
   const handleClose = () => {

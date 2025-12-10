@@ -5,7 +5,7 @@ import { LoginModal } from "@/components/LoginModal";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://buildermaps.com"),
+  metadataBase: new URL("https://builder-maps.vercel.app"),
   title: "Builder Maps - Where builders hang out",
   description: "Discover coworking spaces, hacker houses, cafes, and communities where the builder community gathers in any city.",
   manifest: "/manifest.json",

@@ -36,24 +36,31 @@ export function ReviewModal({ isOpen, onClose, spotName, spotId }: ReviewModalPr
 
     setIsSubmitting(true);
 
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1000));
+    try {
+      const response = await fetch(`/api/spots/${spotId}/reviews`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          rating,
+          text: sanitizedText,
+        }),
+      });
 
-    // In production, this would call an API to save the review
-    console.log("Review submitted:", {
-      spotId,
-      rating,
-      text: sanitizedText,
-      authorHandle: user.handle,
-      authorName: user.displayName,
-      provider: user.provider,
-    });
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.error || "Failed to submit review");
+      }
 
-    // Reset form and close
-    setRating(0);
-    setReviewText("");
-    setIsSubmitting(false);
-    onClose();
+      // Reset form and close
+      setRating(0);
+      setReviewText("");
+      onClose();
+    } catch (error) {
+      console.error("Failed to submit review:", error);
+      alert("Failed to submit review. Please try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleClose = () => {
