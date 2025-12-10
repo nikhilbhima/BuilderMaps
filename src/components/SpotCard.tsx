@@ -127,22 +127,27 @@ function UpvotersModal({
 
 export function SpotCard({ spot, isSelected, onClick, index = 0 }: SpotCardProps) {
   const { hasUpvoted, toggleUpvote, user } = useApp();
-  const [localUpvotes, setLocalUpvotes] = useState(spot.upvotes);
   const [showUpvoters, setShowUpvoters] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false);
   const isUpvoted = hasUpvoted(spot.id);
   const typeConfig = spotTypeConfig[spot.types[0]];
   const colors = colorClasses[typeConfig.color] || colorClasses.purple;
 
+  // Calculate display count: base count + adjustment based on user's upvote state
+  const displayUpvotes = spot.upvotes + (isUpvoted ? 1 : 0);
+
   const handleUpvote = async (e: React.MouseEvent) => {
     e.stopPropagation();
+    if (isProcessing) return;
+
     if (!user) {
       toggleUpvote(spot.id);
       return;
     }
-    // Optimistic update based on current state
-    const willBeUpvoted = !isUpvoted;
-    setLocalUpvotes((prev) => willBeUpvoted ? prev + 1 : prev - 1);
+
+    setIsProcessing(true);
     await toggleUpvote(spot.id);
+    setIsProcessing(false);
   };
 
   const handleShowUpvoters = (e: React.MouseEvent) => {
@@ -205,19 +210,20 @@ export function SpotCard({ spot, isSelected, onClick, index = 0 }: SpotCardProps
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
+              whileHover={{ scale: isProcessing ? 1 : 1.05 }}
+              whileTap={{ scale: isProcessing ? 1 : 0.95 }}
+              disabled={isProcessing}
               className={`flex items-center gap-1.5 px-3 py-1.5 border rounded-lg text-sm transition-colors group ${
                 isUpvoted
                   ? "bg-[#c8ff00]/20 border-[#c8ff00]/50"
                   : "bg-[#1a1a1f] hover:bg-[#c8ff00]/15 border-[#272727] hover:border-[#c8ff00]/30"
-              }`}
+              } ${isProcessing ? "opacity-50 cursor-not-allowed" : ""}`}
               onClick={handleUpvote}
             >
               <svg className={`w-4 h-4 ${isUpvoted ? "text-[#c8ff00]" : "text-[#c8ff00]"} group-hover:scale-110 transition-transform`} fill={isUpvoted ? "currentColor" : "none"} viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
               </svg>
-              <span className="text-[#fafafa] font-medium font-mono">{localUpvotes}</span>
+              <span className="text-[#fafafa] font-medium font-mono">{displayUpvotes}</span>
             </motion.button>
 
             {/* Upvoters display - clickable to show list */}
