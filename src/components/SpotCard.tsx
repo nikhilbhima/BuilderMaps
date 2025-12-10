@@ -146,8 +146,11 @@ export function SpotCard({ spot, isSelected, onClick, index = 0 }: SpotCardProps
     }
 
     setIsProcessing(true);
-    await toggleUpvote(spot.id);
-    setIsProcessing(false);
+    try {
+      await toggleUpvote(spot.id);
+    } finally {
+      setIsProcessing(false);
+    }
   };
 
   const handleShowUpvoters = (e: React.MouseEvent) => {
