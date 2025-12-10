@@ -10,12 +10,16 @@ import { SpotCard } from "@/components/SpotCard";
 import { SpotFilters } from "@/components/SpotFilters";
 import { EmptyState } from "@/components/EmptyState";
 import { NominationModal } from "@/components/NominationModal";
+import { ReviewModal } from "@/components/ReviewModal";
 import { cities } from "@/data/cities";
 import { getSpotsByCity, Spot, SpotType, spotTypeConfig } from "@/data/spots";
+import { useApp } from "@/contexts/AppContext";
 
 // Inline detail panel component
 function SpotDetailPanel({ spot, onClose }: { spot: Spot; onClose: () => void }) {
   const typeConfig = spotTypeConfig[spot.types[0]];
+  const { user, openLoginModal } = useApp();
+  const [showReviewModal, setShowReviewModal] = useState(false);
 
   return (
     <motion.div
@@ -167,7 +171,125 @@ function SpotDetailPanel({ spot, onClose }: { spot: Spot; onClose: () => void })
             )}
           </div>
         </div>
+
+        {/* Reviews Section */}
+        {spot.reviews && spot.reviews.length > 0 && (
+          <div className="border-t border-[#272727] pt-4">
+            <div className="flex items-center justify-between mb-3">
+              <h3 className="text-xs font-medium text-[#71717a] uppercase tracking-wider">
+                Reviews ({spot.reviews.length})
+              </h3>
+              <button
+                onClick={() => {
+                  if (!user) {
+                    openLoginModal();
+                  } else {
+                    setShowReviewModal(true);
+                  }
+                }}
+                className="text-xs text-[#c8ff00] hover:text-[#c8ff00]/80 font-medium transition-colors"
+              >
+                Leave a review
+              </button>
+            </div>
+
+            <div className="space-y-3 max-h-96 overflow-y-auto pr-1">
+              {spot.reviews.map((review) => {
+                const provider = review.provider || "x";
+                const profileUrl = provider === "linkedin"
+                  ? `https://linkedin.com/in/${review.authorHandle}`
+                  : `https://x.com/${review.authorHandle}`;
+
+                return (
+                  <div
+                    key={review.id}
+                    className="p-3 bg-[#1a1a1f] border border-[#272727] rounded-lg"
+                  >
+                    <div className="flex items-start gap-2 mb-2">
+                      <div className="w-8 h-8 rounded-full bg-[#272727] flex items-center justify-center text-sm font-medium text-[#c8ff00] shrink-0">
+                        {review.authorName?.[0]?.toUpperCase() || review.authorHandle[0].toUpperCase()}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-1.5 mb-0.5">
+                          {provider === "x" ? (
+                            <svg className="w-3 h-3 text-[#71717a] shrink-0" viewBox="0 0 24 24" fill="currentColor">
+                              <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+                            </svg>
+                          ) : (
+                            <svg className="w-3 h-3 text-[#0a66c2] shrink-0" viewBox="0 0 24 24" fill="currentColor">
+                              <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
+                            </svg>
+                          )}
+                          <a
+                            href={profileUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-sm font-medium text-[#fafafa] hover:text-[#c8ff00] transition-colors truncate"
+                          >
+                            {review.authorName || review.authorHandle}
+                          </a>
+                        </div>
+                        <div className="flex items-center gap-1 mb-1">
+                          {Array.from({ length: 5 }).map((_, i) => (
+                            <svg
+                              key={i}
+                              className={`w-3.5 h-3.5 ${i < review.rating ? "text-[#c8ff00]" : "text-[#3f3f46]"}`}
+                              fill="currentColor"
+                              viewBox="0 0 20 20"
+                            >
+                              <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                            </svg>
+                          ))}
+                        </div>
+                        <p className="text-xs text-[#a1a1aa] leading-relaxed">
+                          {review.text}
+                        </p>
+                        <p className="text-xs text-[#52525b] mt-1">
+                          {new Date(review.createdAt).toLocaleDateString()}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
+        {/* No reviews state */}
+        {(!spot.reviews || spot.reviews.length === 0) && (
+          <div className="border-t border-[#272727] pt-4">
+            <div className="flex items-center justify-between mb-3">
+              <h3 className="text-xs font-medium text-[#71717a] uppercase tracking-wider">
+                Reviews
+              </h3>
+            </div>
+            <div className="text-center py-6">
+              <p className="text-sm text-[#52525b] mb-2">No reviews yet</p>
+              <button
+                onClick={() => {
+                  if (!user) {
+                    openLoginModal();
+                  } else {
+                    setShowReviewModal(true);
+                  }
+                }}
+                className="text-sm text-[#c8ff00] hover:text-[#c8ff00]/80 font-medium transition-colors"
+              >
+                Be the first to review
+              </button>
+            </div>
+          </div>
+        )}
       </div>
+
+      {/* Review Modal */}
+      <ReviewModal
+        isOpen={showReviewModal}
+        onClose={() => setShowReviewModal(false)}
+        spotName={spot.name}
+        spotId={spot.id}
+      />
     </motion.div>
   );
 }

@@ -25,14 +25,14 @@ export default function Home() {
           <div className="absolute inset-0 bg-gradient-to-b from-[#c8ff00]/5 via-transparent to-transparent" />
           <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-[#c8ff00]/10 rounded-full blur-[120px]" />
 
-          <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-10 sm:pt-14 pb-12 sm:pb-16">
+          <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 sm:pt-10 pb-8 sm:pb-10">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6 }}
               className="text-center"
             >
-              <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold text-[#fafafa] mb-4">
+              <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-[#fafafa] mb-4">
                 Where builders{" "}
                 <span className="text-[#c8ff00]">
                   hang out

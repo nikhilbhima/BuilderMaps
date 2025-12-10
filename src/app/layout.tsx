@@ -4,6 +4,7 @@ import { LoginModal } from "@/components/LoginModal";
 import "./globals.css";
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://buildermaps.com"),
   title: "Builder Maps - Where builders hang out",
   description: "Discover coworking spaces, hacker houses, cafes, and event venues where the builder community gathers in any city.",
   manifest: "/manifest.json",

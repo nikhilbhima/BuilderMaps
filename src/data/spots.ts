@@ -28,16 +28,18 @@ export type VibeTag =
   | "mentorship";
 
 export interface Upvoter {
-  handle: string; // Twitter/X handle
+  handle: string; // X or LinkedIn handle
   displayName?: string;
   avatarUrl?: string;
+  provider?: "x" | "linkedin"; // Optional for backward compatibility
 }
 
 export interface Review {
   id: string;
-  authorHandle: string; // Twitter/X handle
+  authorHandle: string; // X or LinkedIn handle
   authorName?: string;
   authorAvatarUrl?: string;
+  provider?: "x" | "linkedin"; // Optional for backward compatibility
   rating: 1 | 2 | 3 | 4 | 5;
   text: string;
   createdAt: string; // ISO date string
@@ -191,7 +193,7 @@ export const spots: Spot[] = [
     cityId: "bangalore",
     types: ["community"],
     description: "BitGo hosts monthly events for devs, builders, engineers, and the crypto community. Great place to connect with web3 folks.",
-    coordinates: [12.93378, 77.62105],
+    coordinates: [77.62105, 12.93378], // [lng, lat] format
     vibes: ["crypto crowd", "open community", "loud debates"],
     upvotes: 32,
     googleMapsUrl: "https://maps.google.com/?q=139+Koramangala+5th+Block+Bangalore",
