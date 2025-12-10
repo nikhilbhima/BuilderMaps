@@ -220,7 +220,7 @@ export function SpotCard({ spot, isSelected, onClick, index = 0 }: SpotCardProps
                 isUpvoted
                   ? "bg-[#c8ff00]/20 border-[#c8ff00]/50"
                   : "bg-[#1a1a1f] hover:bg-[#c8ff00]/15 border-[#272727] hover:border-[#c8ff00]/30"
-              } ${isProcessing ? "opacity-50 cursor-not-allowed" : ""}`}
+              }`}
               onClick={handleUpvote}
             >
               <svg className={`w-4 h-4 ${isUpvoted ? "text-[#c8ff00]" : "text-[#c8ff00]"} group-hover:scale-110 transition-transform`} fill={isUpvoted ? "currentColor" : "none"} viewBox="0 0 24 24" stroke="currentColor">
