@@ -15,10 +15,30 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     LinkedIn({
       clientId: process.env.LINKEDIN_CLIENT_ID,
       clientSecret: process.env.LINKEDIN_CLIENT_SECRET,
+      client: { token_endpoint_auth_method: "client_secret_post" },
+      issuer: "https://www.linkedin.com",
+      wellKnown: "https://www.linkedin.com/oauth/.well-known/openid-configuration",
       authorization: {
+        url: "https://www.linkedin.com/oauth/v2/authorization",
         params: {
-          scope: "openid profile email",
+          scope: "profile email openid",
+          prompt: "consent",
+          response_type: "code",
         },
+      },
+      token: {
+        url: "https://www.linkedin.com/oauth/v2/accessToken",
+      },
+      userinfo: {
+        url: "https://api.linkedin.com/v2/userinfo",
+      },
+      profile(profile) {
+        return {
+          id: profile.sub,
+          name: profile.name,
+          email: profile.email,
+          image: profile.picture,
+        };
       },
     }),
   ],
