@@ -1,9 +1,6 @@
 import NextAuth from "next-auth";
 import Twitter from "next-auth/providers/twitter";
 import LinkedIn from "next-auth/providers/linkedin";
-import { db } from "./db";
-import { users } from "./schema";
-import { eq } from "drizzle-orm";
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   debug: process.env.NODE_ENV === "development",
@@ -43,67 +40,40 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     }),
   ],
   callbacks: {
-    async signIn({ user, account }) {
-      if (!account) return false;
-
-      // For OAuth providers, create or update user in database
-      if (account.provider === "twitter" || account.provider === "linkedin") {
-        const provider = account.provider === "twitter" ? "x" : "linkedin";
-        const existingUser = await db.query.users.findFirst({
-          where: eq(users.id, user.id!),
-        });
-
-        if (!existingUser) {
-          await db.insert(users).values({
-            id: user.id!,
-            email: user.email || undefined,
-            handle: user.name || user.id!,
-            displayName: user.name,
-            avatarUrl: user.image,
-            provider,
-          });
-        } else {
-          await db
-            .update(users)
-            .set({
-              displayName: user.name,
-              avatarUrl: user.image,
-              updatedAt: new Date(),
-            })
-            .where(eq(users.id, user.id!));
-        }
-      }
-
+    // Simple signIn - just allow all OAuth logins
+    async signIn() {
       return true;
     },
+    // Store user info in session from token
     async session({ session, token }) {
-      if (token.sub) {
-        session.user.id = token.sub;
-
-        // Fetch user from database to get additional info
-        const dbUser = await db.query.users.findFirst({
-          where: eq(users.id, token.sub),
-        });
-
-        if (dbUser) {
-          session.user.handle = dbUser.handle;
-          session.user.provider = dbUser.provider as "x" | "linkedin";
-        }
+      if (token) {
+        session.user.id = token.sub || token.id as string;
+        session.user.handle = token.handle as string || token.name as string || "user";
+        session.user.provider = token.provider as "x" | "linkedin";
       }
       return session;
     },
-    async jwt({ token, user, account }) {
+    // Store all user info in JWT token (no DB needed)
+    async jwt({ token, user, account, profile }) {
       if (user) {
-        token.sub = user.id;
+        token.id = user.id;
+        token.name = user.name;
+        token.email = user.email;
+        token.image = user.image;
       }
       if (account) {
-        token.provider = account.provider;
+        token.provider = account.provider === "twitter" ? "x" : "linkedin";
+      }
+      // Use profile data for handle
+      if (profile) {
+        // Twitter provides username, LinkedIn provides name
+        token.handle = (profile as { username?: string }).username || user?.name || "user";
       }
       return token;
     },
   },
   pages: {
-    signIn: "/", // Use custom modal instead of separate page
+    signIn: "/",
     error: "/",
   },
   session: {

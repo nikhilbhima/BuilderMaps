@@ -5,6 +5,24 @@ import { eq, desc } from "drizzle-orm";
 import { auth } from "@/lib/auth";
 import { sanitizeReviewText } from "@/utils/sanitize";
 
+// Helper to ensure user exists in database (lazy creation)
+async function ensureUserExists(session: { user: { id: string; name?: string | null; email?: string | null; image?: string | null; handle?: string; provider?: "x" | "linkedin" } }) {
+  const existingUser = await db.query.users.findFirst({
+    where: eq(users.id, session.user.id),
+  });
+
+  if (!existingUser) {
+    await db.insert(users).values({
+      id: session.user.id,
+      email: session.user.email || undefined,
+      handle: session.user.handle || session.user.name || session.user.id,
+      displayName: session.user.name,
+      avatarUrl: session.user.image,
+      provider: session.user.provider || "x",
+    });
+  }
+}
+
 // GET /api/spots/[spotId]/reviews - Get reviews for a spot
 export async function GET(
   request: NextRequest,
@@ -79,6 +97,9 @@ export async function POST(
         { status: 400 }
       );
     }
+
+    // Ensure user exists in database (lazy creation)
+    await ensureUserExists(session);
 
     // Check if spot exists
     const spot = await db.query.spots.findFirst({

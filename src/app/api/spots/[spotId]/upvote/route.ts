@@ -4,6 +4,24 @@ import { upvotes, spots, users } from "@/lib/schema";
 import { eq, and, sql } from "drizzle-orm";
 import { auth } from "@/lib/auth";
 
+// Helper to ensure user exists in database (lazy creation)
+async function ensureUserExists(session: { user: { id: string; name?: string | null; email?: string | null; image?: string | null; handle?: string; provider?: "x" | "linkedin" } }) {
+  const existingUser = await db.query.users.findFirst({
+    where: eq(users.id, session.user.id),
+  });
+
+  if (!existingUser) {
+    await db.insert(users).values({
+      id: session.user.id,
+      email: session.user.email || undefined,
+      handle: session.user.handle || session.user.name || session.user.id,
+      displayName: session.user.name,
+      avatarUrl: session.user.image,
+      provider: session.user.provider || "x",
+    });
+  }
+}
+
 // POST /api/spots/[spotId]/upvote - Toggle upvote on a spot
 export async function POST(
   request: NextRequest,
@@ -16,6 +34,9 @@ export async function POST(
     }
 
     const { spotId } = await params;
+
+    // Ensure user exists in database (lazy creation)
+    await ensureUserExists(session);
 
     // Check if spot exists
     const spot = await db.query.spots.findFirst({
