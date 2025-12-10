@@ -39,6 +39,18 @@ export function Footer({ onNominate }: FooterProps) {
               >
                 Nominate
               </button>
+              <Link
+                href="/terms"
+                className="text-[#71717a] hover:text-[#fafafa] transition-colors"
+              >
+                Terms
+              </Link>
+              <Link
+                href="/privacy"
+                className="text-[#71717a] hover:text-[#fafafa] transition-colors"
+              >
+                Privacy
+              </Link>
             </div>
           </div>
 

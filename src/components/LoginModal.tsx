@@ -1,18 +1,31 @@
 "use client";
 
 import { motion, AnimatePresence } from "framer-motion";
-import { signIn } from "next-auth/react";
+import { createClient } from "@/lib/supabase/client";
 import { useApp } from "@/contexts/AppContext";
+
+const SITE_URL = "https://builder-maps.vercel.app";
 
 export function LoginModal() {
   const { isLoginModalOpen, closeLoginModal } = useApp();
+  const supabase = createClient();
 
-  const handleXLogin = () => {
-    signIn("twitter", { callbackUrl: window.location.href });
+  const handleXLogin = async () => {
+    await supabase.auth.signInWithOAuth({
+      provider: "twitter",
+      options: {
+        redirectTo: `${SITE_URL}/auth/callback`,
+      },
+    });
   };
 
-  const handleLinkedInLogin = () => {
-    signIn("linkedin", { callbackUrl: window.location.href });
+  const handleLinkedInLogin = async () => {
+    await supabase.auth.signInWithOAuth({
+      provider: "linkedin_oidc",
+      options: {
+        redirectTo: `${SITE_URL}/auth/callback`,
+      },
+    });
   };
 
   return (
