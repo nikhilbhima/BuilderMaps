@@ -181,13 +181,6 @@ export function SpotCard({ spot, isSelected, onClick, index = 0 }: SpotCardProps
               </span>
             </div>
           </div>
-          <div className="flex items-center gap-1">
-            {spot.featured && (
-              <span className="text-xs px-2 py-1 bg-[#c8ff00]/15 text-[#c8ff00] rounded-full font-mono">
-                Featured
-              </span>
-            )}
-          </div>
         </div>
 
         <p className="text-[#71717a] text-sm mb-3 line-clamp-2">{spot.description}</p>

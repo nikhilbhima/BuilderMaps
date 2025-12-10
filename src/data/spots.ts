@@ -64,7 +64,6 @@ export interface Spot {
   linkedinUrl?: string;
   addedBy: string; // Twitter handle
   approved: boolean;
-  featured?: boolean;
 }
 
 export const spots: Spot[] = [
@@ -85,7 +84,6 @@ export const spots: Spot[] = [
     twitterUrl: "https://twitter.com/zoloworld",
     addedBy: "nikhilbhima",
     approved: true,
-    featured: true,
   },
   {
     id: "shipyard",
@@ -100,7 +98,6 @@ export const spots: Spot[] = [
     websiteUrl: "https://shipyard.co",
     addedBy: "nikhilbhima",
     approved: true,
-    featured: true,
   },
   {
     id: "localhost",
@@ -201,7 +198,6 @@ export const spots: Spot[] = [
     websiteUrl: "https://southparkcommons.com",
     addedBy: "nikhilbhima",
     approved: true,
-    featured: true,
   },
   {
     id: "agi-house",
@@ -216,7 +212,6 @@ export const spots: Spot[] = [
     twitterUrl: "https://twitter.com/agihouse",
     addedBy: "nikhilbhima",
     approved: true,
-    featured: true,
   },
   {
     id: "cerebral-valley",
@@ -288,7 +283,6 @@ export const spots: Spot[] = [
     websiteUrl: "https://justco.com",
     addedBy: "nikhilbhima",
     approved: true,
-    featured: true,
   },
   {
     id: "the-hive-singapore",
@@ -371,7 +365,6 @@ export const spots: Spot[] = [
     websiteUrl: "https://wework.com",
     addedBy: "nikhilbhima",
     approved: true,
-    featured: true,
   },
   {
     id: "the-hive-jinnan",
@@ -453,7 +446,6 @@ export const spots: Spot[] = [
     websiteUrl: "https://campus.co/seoul",
     addedBy: "nikhilbhima",
     approved: true,
-    featured: true,
   },
   {
     id: "seoul-startup-hub",
@@ -523,7 +515,6 @@ export const spots: Spot[] = [
     websiteUrl: "https://thehive.com.hk",
     addedBy: "nikhilbhima",
     approved: true,
-    featured: true,
   },
   {
     id: "garage-society-hk",
@@ -593,7 +584,6 @@ export const spots: Spot[] = [
     websiteUrl: "https://plexal.com",
     addedBy: "nikhilbhima",
     approved: true,
-    featured: true,
   },
   {
     id: "techhub-london",
@@ -663,7 +653,6 @@ export const spots: Spot[] = [
     websiteUrl: "https://factoryberlin.com",
     addedBy: "nikhilbhima",
     approved: true,
-    featured: true,
   },
   {
     id: "betahaus-berlin",
@@ -733,7 +722,6 @@ export const spots: Spot[] = [
     websiteUrl: "https://secondhome.io/lisbon",
     addedBy: "nikhilbhima",
     approved: true,
-    featured: true,
   },
   {
     id: "impact-hub-lisbon",
@@ -802,7 +790,6 @@ export const spots: Spot[] = [
     websiteUrl: "https://b.amsterdam",
     addedBy: "nikhilbhima",
     approved: true,
-    featured: true,
   },
   {
     id: "tq-amsterdam",
@@ -871,7 +858,6 @@ export const spots: Spot[] = [
     websiteUrl: "https://stationf.co",
     addedBy: "nikhilbhima",
     approved: true,
-    featured: true,
   },
   {
     id: "la-ruche-paris",
@@ -941,7 +927,6 @@ export const spots: Spot[] = [
     websiteUrl: "https://dogpatchlabs.com",
     addedBy: "nikhilbhima",
     approved: true,
-    featured: true,
   },
   {
     id: "talent-garden-dublin",
@@ -1011,7 +996,6 @@ export const spots: Spot[] = [
     websiteUrl: "https://dtec.ae",
     addedBy: "nikhilbhima",
     approved: true,
-    featured: true,
   },
   {
     id: "astrolabs-dubai",
@@ -1079,7 +1063,6 @@ export const spots: Spot[] = [
     websiteUrl: "https://wework.com",
     addedBy: "nikhilbhima",
     approved: true,
-    featured: true,
   },
   {
     id: "mindspace-tel-aviv",
@@ -1148,7 +1131,6 @@ export const spots: Spot[] = [
     websiteUrl: "https://cchubnigeria.com",
     addedBy: "nikhilbhima",
     approved: true,
-    featured: true,
   },
   {
     id: "impact-hub-lagos",
@@ -1218,7 +1200,6 @@ export const spots: Spot[] = [
     websiteUrl: "https://nairobigarage.com",
     addedBy: "nikhilbhima",
     approved: true,
-    featured: true,
   },
   {
     id: "ihub-nairobi",
@@ -1288,7 +1269,6 @@ export const spots: Spot[] = [
     websiteUrl: "https://thefarmsoho.com",
     addedBy: "nikhilbhima",
     approved: true,
-    featured: true,
   },
   {
     id: "company-nyc",
@@ -1357,7 +1337,6 @@ export const spots: Spot[] = [
     websiteUrl: "https://capitalfactory.com",
     addedBy: "nikhilbhima",
     approved: true,
-    featured: true,
   },
   {
     id: "tech-ranch-austin",
@@ -1427,7 +1406,6 @@ export const spots: Spot[] = [
     websiteUrl: "https://thelabmiami.com",
     addedBy: "nikhilbhima",
     approved: true,
-    featured: true,
   },
   {
     id: "cic-miami",
@@ -1496,7 +1474,6 @@ export const spots: Spot[] = [
     websiteUrl: "https://startuptive.com",
     addedBy: "nikhilbhima",
     approved: true,
-    featured: true,
   },
   {
     id: "iq-offices-toronto",
@@ -1566,7 +1543,6 @@ export const spots: Spot[] = [
     websiteUrl: "https://campus.co/sao-paulo",
     addedBy: "nikhilbhima",
     approved: true,
-    featured: true,
   },
   {
     id: "cubo-saopaulo",
@@ -1635,7 +1611,6 @@ export const spots: Spot[] = [
     websiteUrl: "https://mexico.impacthub.net",
     addedBy: "nikhilbhima",
     approved: true,
-    featured: true,
   },
   {
     id: "centraal-cdmx",
@@ -1704,7 +1679,6 @@ export const spots: Spot[] = [
     websiteUrl: "https://lamaquinitaco.com",
     addedBy: "nikhilbhima",
     approved: true,
-    featured: true,
   },
   {
     id: "hit-coworking-ba",
@@ -1774,7 +1748,6 @@ export const spots: Spot[] = [
     websiteUrl: "https://hubbog.com",
     addedBy: "nikhilbhima",
     approved: true,
-    featured: true,
   },
   {
     id: "impact-hub-bogota",
@@ -1843,7 +1816,6 @@ export const spots: Spot[] = [
     websiteUrl: "https://wework.com",
     addedBy: "nikhilbhima",
     approved: true,
-    featured: true,
   },
   {
     id: "91springboard-mumbai",
@@ -1912,7 +1884,6 @@ export const spots: Spot[] = [
     websiteUrl: "https://barcelonatechcity.com",
     addedBy: "buildermaps",
     approved: true,
-    featured: true,
   },
   {
     id: "mob-barcelona",
@@ -1969,7 +1940,6 @@ export const spots: Spot[] = [
     websiteUrl: "https://theventurelane.com",
     addedBy: "buildermaps",
     approved: true,
-    featured: true,
   },
   {
     id: "cic-boston",
@@ -2025,7 +1995,6 @@ export const spots: Spot[] = [
     upvotes: 0,
     addedBy: "buildermaps",
     approved: true,
-    featured: true,
   },
   {
     id: "the-district-cairo",
@@ -2080,7 +2049,6 @@ export const spots: Spot[] = [
     websiteUrl: "https://innovationcity.co.za",
     addedBy: "buildermaps",
     approved: true,
-    featured: true,
   },
   {
     id: "workshop17-cape-town",
@@ -2135,7 +2103,6 @@ export const spots: Spot[] = [
     upvotes: 0,
     addedBy: "buildermaps",
     approved: true,
-    featured: true,
   },
   {
     id: "gowork-jakarta",
@@ -2191,7 +2158,6 @@ export const spots: Spot[] = [
     websiteUrl: "https://comunal.co",
     addedBy: "buildermaps",
     approved: true,
-    featured: true,
   },
   {
     id: "wework-lima",
@@ -2234,7 +2200,6 @@ export const spots: Spot[] = [
     websiteUrl: "https://blankspaces.com",
     addedBy: "buildermaps",
     approved: true,
-    featured: true,
   },
   {
     id: "laci-la",
@@ -2291,7 +2256,6 @@ export const spots: Spot[] = [
     websiteUrl: "https://startupchile.org",
     addedBy: "buildermaps",
     approved: true,
-    featured: true,
   },
   {
     id: "urban-station-santiago",
@@ -2333,7 +2297,6 @@ export const spots: Spot[] = [
     upvotes: 0,
     addedBy: "buildermaps",
     approved: true,
-    featured: true,
   },
   {
     id: "surf-incubator-seattle",
@@ -2390,7 +2353,6 @@ export const spots: Spot[] = [
     websiteUrl: "https://seeedstudio.com",
     addedBy: "buildermaps",
     approved: true,
-    featured: true,
   },
   {
     id: "x-factory-shenzhen",
@@ -2445,7 +2407,6 @@ export const spots: Spot[] = [
     websiteUrl: "https://norrsken.org",
     addedBy: "buildermaps",
     approved: true,
-    featured: true,
   },
   {
     id: "things-stockholm",
@@ -2502,7 +2463,6 @@ export const spots: Spot[] = [
     websiteUrl: "https://fishburners.org",
     addedBy: "buildermaps",
     approved: true,
-    featured: true,
   },
   {
     id: "stone-chalk-sydney",
@@ -2557,7 +2517,6 @@ export const spots: Spot[] = [
     upvotes: 0,
     addedBy: "buildermaps",
     approved: true,
-    featured: true,
   },
   {
     id: "startup-taipei",
@@ -2601,7 +2560,6 @@ export const spots: Spot[] = [
     websiteUrl: "https://lift99.co",
     addedBy: "buildermaps",
     approved: true,
-    featured: true,
   },
   {
     id: "tehnopol-tallinn",
@@ -2644,7 +2602,6 @@ export const spots: Spot[] = [
     upvotes: 0,
     addedBy: "buildermaps",
     approved: true,
-    featured: true,
   },
   {
     id: "werklab-vancouver",
@@ -2687,7 +2644,6 @@ export const spots: Spot[] = [
     websiteUrl: "https://zurich.impacthub.net",
     addedBy: "buildermaps",
     approved: true,
-    featured: true,
   },
   {
     id: "technopark-zurich",
