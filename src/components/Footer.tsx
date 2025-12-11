@@ -51,6 +51,12 @@ export function Footer({ onNominate }: FooterProps) {
               >
                 Privacy
               </Link>
+              <Link
+                href="/become-admin"
+                className="text-[var(--text-secondary)] hover:text-[var(--accent-lime)] transition-colors"
+              >
+                Become a City Admin
+              </Link>
             </div>
           </div>
 
