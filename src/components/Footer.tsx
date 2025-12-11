@@ -19,7 +19,7 @@ export function Footer({ onNominate }: FooterProps) {
                 href="https://x.com/nikhilbhima"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-[var(--brand-lime)] hover:opacity-80 transition-colors font-medium"
+                className="text-[var(--accent-lime)] hover:opacity-80 transition-colors font-medium"
               >
                 @nikhilbhima
               </a>

@@ -40,7 +40,7 @@ export function EmptyState({ cityName, onNominate }: EmptyStateProps) {
           href="https://x.com/nikhilbhima"
           target="_blank"
           rel="noopener noreferrer"
-          className="text-[var(--brand-lime)] hover:opacity-80 transition-colors"
+          className="text-[var(--accent-lime)] hover:opacity-80 transition-colors"
         >
           DM @nikhilbhima on X
         </a>

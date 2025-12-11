@@ -49,7 +49,7 @@ const toastIcons: Record<ToastType, React.ReactNode> = {
 };
 
 const toastStyles: Record<ToastType, string> = {
-  success: "bg-[var(--brand-lime)]/10 border-[var(--brand-lime)]/30 text-[var(--brand-lime)]",
+  success: "bg-[var(--accent-lime)]/10 border-[var(--accent-lime)]/30 text-[var(--accent-lime)]",
   error: "bg-red-500/10 border-red-500/30 text-red-400",
   info: "bg-blue-500/10 border-blue-500/30 text-blue-400",
   warning: "bg-orange-500/10 border-orange-500/30 text-orange-400",

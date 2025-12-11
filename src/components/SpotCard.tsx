@@ -148,7 +148,7 @@ function UpvotersModal({
                     rel="noopener noreferrer"
                     className="flex items-center gap-3 p-2 hover:bg-[var(--bg-card-hover)] rounded-lg transition-colors"
                   >
-                    <div className="w-8 h-8 rounded-full bg-[var(--border)] flex items-center justify-center text-sm font-medium text-[var(--brand-lime)]">
+                    <div className="w-8 h-8 rounded-full bg-[var(--border)] flex items-center justify-center text-sm font-medium text-[var(--accent-lime)]">
                       {upvoter.displayName?.[0]?.toUpperCase() || upvoter.handle[0].toUpperCase()}
                     </div>
                     <div className="flex-1">
@@ -270,7 +270,7 @@ export function SpotCard({ spot, isSelected, onClick, index = 0 }: SpotCardProps
               }`}
               onClick={handleUpvote}
             >
-              <svg className={`w-4 h-4 text-[var(--brand-lime)] group-hover:scale-110 transition-transform`} fill={isUpvoted ? "currentColor" : "none"} viewBox="0 0 24 24" stroke="currentColor">
+              <svg className={`w-4 h-4 text-[var(--accent-lime)] group-hover:scale-110 transition-transform`} fill={isUpvoted ? "currentColor" : "none"} viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
               </svg>
               <span className="text-[var(--text-primary)] font-medium font-mono">{displayUpvotes}</span>

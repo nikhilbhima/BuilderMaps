@@ -88,7 +88,7 @@ export function InlineReviewForm({ spotId, spotName, onReviewAdded }: InlineRevi
         <motion.p
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
-          className="text-xs text-[var(--brand-lime)]"
+          className="text-xs text-[var(--accent-lime)]"
         >
           Review submitted successfully!
         </motion.p>
@@ -97,7 +97,7 @@ export function InlineReviewForm({ spotId, spotName, onReviewAdded }: InlineRevi
       <div className="flex items-center justify-between">
         {user && (
           <div className="flex items-center gap-2">
-            <div className="w-6 h-6 rounded-full bg-[var(--border)] flex items-center justify-center text-xs font-medium text-[var(--brand-lime)]">
+            <div className="w-6 h-6 rounded-full bg-[var(--border)] flex items-center justify-center text-xs font-medium text-[var(--accent-lime)]">
               {user.displayName?.[0]?.toUpperCase() || user.handle[0].toUpperCase()}
             </div>
             <span className="text-xs text-[var(--text-secondary)]">

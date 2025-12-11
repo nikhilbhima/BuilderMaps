@@ -139,7 +139,7 @@ export function ReviewModal({ isOpen, onClose, spotName, spotId }: ReviewModalPr
                           <svg
                             className={`w-8 h-8 transition-colors ${
                               starValue <= (hoverRating || rating)
-                                ? "text-[var(--brand-lime)]"
+                                ? "text-[var(--accent-lime)]"
                                 : "text-[var(--border)]"
                             }`}
                             fill="currentColor"
@@ -177,7 +177,7 @@ export function ReviewModal({ isOpen, onClose, spotName, spotId }: ReviewModalPr
                 {/* User Info */}
                 {user && (
                   <div className="flex items-center gap-2 p-3 bg-[var(--bg-card-hover)] border border-[var(--border)] rounded-lg">
-                    <div className="w-8 h-8 rounded-full bg-[var(--border)] flex items-center justify-center text-sm font-medium text-[var(--brand-lime)]">
+                    <div className="w-8 h-8 rounded-full bg-[var(--border)] flex items-center justify-center text-sm font-medium text-[var(--accent-lime)]">
                       {user.displayName?.[0]?.toUpperCase() || user.handle[0].toUpperCase()}
                     </div>
                     <div className="flex-1">

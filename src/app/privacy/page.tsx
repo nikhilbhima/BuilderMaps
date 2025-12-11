@@ -70,7 +70,7 @@ export default function PrivacyPage() {
 
           <section className="space-y-3">
             <h2 className="text-xl font-semibold text-[var(--text-primary)]">8. Contact</h2>
-            <p>Questions? Reach out on <a href="https://x.com/nikhilbhima" target="_blank" rel="noopener noreferrer" className="text-[var(--brand-lime)] hover:underline">X @nikhilbhima</a>.</p>
+            <p>Questions? Reach out on <a href="https://x.com/nikhilbhima" target="_blank" rel="noopener noreferrer" className="text-[var(--accent-lime)] hover:underline">X @nikhilbhima</a>.</p>
           </section>
         </div>
       </main>

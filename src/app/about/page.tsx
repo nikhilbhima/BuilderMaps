@@ -14,7 +14,7 @@ export default function AboutPage() {
         {/* Back link */}
         <Link
           href="/"
-          className="inline-flex items-center gap-2 text-[var(--text-secondary)] hover:text-[var(--brand-lime)] transition-colors mb-8"
+          className="inline-flex items-center gap-2 text-[var(--text-secondary)] hover:text-[var(--accent-lime)] transition-colors mb-8"
         >
           <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
@@ -28,7 +28,7 @@ export default function AboutPage() {
         {/* Content */}
         <div className="space-y-6 text-[var(--text-secondary)] leading-relaxed">
           <p className="text-lg">
-            <span className="text-[var(--brand-lime)] font-semibold">Builder Maps</span> is a community-driven platform
+            <span className="text-[var(--accent-lime)] font-semibold">Builder Maps</span> is a community-driven platform
             that helps founders, developers, and builders discover the best spots to work, meet, and
             collaborate in cities around the world.
           </p>
@@ -66,7 +66,7 @@ export default function AboutPage() {
               href="https://x.com/nikhilbhima"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-[var(--brand-lime)] hover:text-[var(--brand-lime)]/80 transition-colors"
+              className="text-[var(--accent-lime)] hover:text-[var(--accent-lime)]/80 transition-colors"
             >
               X @nikhilbhima
             </a>

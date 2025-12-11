@@ -370,9 +370,9 @@ export function NominationModal({ isOpen, onClose, defaultCityId }: NominationMo
                     animate={{ opacity: 1, y: 0 }}
                     className="text-center py-8"
                   >
-                    <div className="w-16 h-16 bg-[var(--brand-lime)]/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <div className="w-16 h-16 bg-[var(--accent-lime)]/20 rounded-full flex items-center justify-center mx-auto mb-4">
                       <svg
-                        className="w-8 h-8 text-[var(--brand-lime)]"
+                        className="w-8 h-8 text-[var(--accent-lime)]"
                         fill="none"
                         viewBox="0 0 24 24"
                         stroke="currentColor"
@@ -436,9 +436,9 @@ export function NominationModal({ isOpen, onClose, defaultCityId }: NominationMo
                   animate={{ opacity: 1, y: 0 }}
                   className="text-center py-8"
                 >
-                  <div className="w-16 h-16 bg-[var(--brand-lime)]/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <div className="w-16 h-16 bg-[var(--accent-lime)]/20 rounded-full flex items-center justify-center mx-auto mb-4">
                     <svg
-                      className="w-8 h-8 text-[var(--brand-lime)]"
+                      className="w-8 h-8 text-[var(--accent-lime)]"
                       fill="none"
                       viewBox="0 0 24 24"
                       stroke="currentColor"
@@ -513,7 +513,7 @@ export function NominationModal({ isOpen, onClose, defaultCityId }: NominationMo
                           <button
                             type="button"
                             onClick={() => setShowRequestCity(true)}
-                            className="mt-2 text-xs text-[var(--brand-lime)] hover:text-[var(--brand-lime)]/80 transition-colors"
+                            className="mt-2 text-xs text-[var(--accent-lime)] hover:text-[var(--accent-lime)]/80 transition-colors"
                           >
                             City not listed? Request it →
                           </button>
@@ -593,7 +593,7 @@ export function NominationModal({ isOpen, onClose, defaultCityId }: NominationMo
                           </div>
                           {urlError && <p className="text-xs text-red-400">{urlError}</p>}
                           {formData.coordinates ? (
-                            <p className="text-xs text-[var(--brand-lime)]">
+                            <p className="text-xs text-[var(--accent-lime)]">
                               ✓ Location detected
                             </p>
                           ) : (
@@ -642,7 +642,7 @@ export function NominationModal({ isOpen, onClose, defaultCityId }: NominationMo
                               onClick={() => handleVibeToggle(vibe)}
                               className={`px-3 py-1.5 rounded-full text-sm border transition-colors ${
                                 formData.vibes.includes(vibe)
-                                  ? "bg-[var(--brand-lime)]/15 border-[var(--brand-lime)]/50 text-[var(--brand-lime)]"
+                                  ? "bg-[var(--accent-lime)]/15 border-[var(--accent-lime)]/50 text-[var(--accent-lime)]"
                                   : "bg-[var(--bg-dark)] border-[var(--border)] text-[var(--text-secondary)] hover:border-[var(--border-hover)]"
                               }`}
                             >
