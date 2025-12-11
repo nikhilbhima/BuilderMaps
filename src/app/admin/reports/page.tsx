@@ -12,6 +12,15 @@ interface SpotReport {
   status: "pending" | "reviewing" | "resolved" | "dismissed";
   resolution_notes: string | null;
   created_at: string;
+  spot?: {
+    name: string;
+    city_id: string;
+  };
+}
+
+interface AdminUser {
+  role: "super_admin" | "city_admin";
+  scope_values: string[];
 }
 
 const REPORT_TYPE_LABELS: Record<string, string> = {
@@ -31,6 +40,8 @@ export default function AdminReportsPage() {
   const [selectedReport, setSelectedReport] = useState<SpotReport | null>(null);
   const [resolutionNotes, setResolutionNotes] = useState("");
   const [processing, setProcessing] = useState(false);
+  const [adminUser, setAdminUser] = useState<AdminUser | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     fetchReports();
@@ -38,13 +49,37 @@ export default function AdminReportsPage() {
 
   async function fetchReports() {
     const supabase = createClient();
+
+    // Get current user's admin info
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+
+    const { data: adminData } = await supabase
+      .from("admin_users")
+      .select("role, scope_values")
+      .eq("user_id", user.id)
+      .single();
+
+    if (adminData) {
+      setAdminUser(adminData);
+    }
+
+    // Fetch reports with spot info for city filtering
     const { data, error } = await supabase
       .from("spot_reports")
-      .select("*")
+      .select(`
+        *,
+        spot:spots!spot_id(name, city_id)
+      `)
       .order("created_at", { ascending: false });
 
     if (!error && data) {
-      setReports(data);
+      // Filter for city admins client-side (since we need to join with spots)
+      let filteredData = data;
+      if (adminData?.role === "city_admin" && adminData.scope_values.length > 0) {
+        filteredData = data.filter(r => r.spot && adminData.scope_values.includes(r.spot.city_id));
+      }
+      setReports(filteredData);
     }
     setLoading(false);
   }

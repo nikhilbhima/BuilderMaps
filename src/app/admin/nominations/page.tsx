@@ -23,6 +23,11 @@ interface Nomination {
   created_at: string;
 }
 
+interface AdminUser {
+  role: "super_admin" | "city_admin";
+  scope_values: string[];
+}
+
 export default function AdminNominationsPage() {
   const [nominations, setNominations] = useState<Nomination[]>([]);
   const [loading, setLoading] = useState(true);
@@ -30,6 +35,8 @@ export default function AdminNominationsPage() {
   const [selectedNomination, setSelectedNomination] = useState<Nomination | null>(null);
   const [adminNotes, setAdminNotes] = useState("");
   const [processing, setProcessing] = useState(false);
+  const [adminUser, setAdminUser] = useState<AdminUser | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     fetchNominations();
@@ -37,10 +44,30 @@ export default function AdminNominationsPage() {
 
   async function fetchNominations() {
     const supabase = createClient();
-    const { data, error } = await supabase
-      .from("nominations")
-      .select("*")
-      .order("created_at", { ascending: false });
+
+    // Get current user's admin info
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+
+    const { data: adminData } = await supabase
+      .from("admin_users")
+      .select("role, scope_values")
+      .eq("user_id", user.id)
+      .single();
+
+    if (adminData) {
+      setAdminUser(adminData);
+    }
+
+    // Fetch nominations - scoped for city admins
+    let query = supabase.from("nominations").select("*").order("created_at", { ascending: false });
+
+    // City admins only see nominations for their assigned cities
+    if (adminData?.role === "city_admin" && adminData.scope_values.length > 0) {
+      query = query.in("city_id", adminData.scope_values);
+    }
+
+    const { data, error } = await query;
 
     if (!error && data) {
       setNominations(data);

@@ -9,9 +9,20 @@ interface Spot {
   city_id: string;
   types: string[];
   description: string;
+  coordinates: number[];
+  vibes: string[];
+  google_maps_url: string | null;
+  website_url: string | null;
+  twitter_url: string | null;
+  instagram_url: string | null;
   approved: boolean;
   created_at: string;
   updated_at: string;
+}
+
+interface AdminUser {
+  role: "super_admin" | "city_admin";
+  scope_values: string[];
 }
 
 export default function AdminSpotsPage() {
@@ -19,17 +30,42 @@ export default function AdminSpotsPage() {
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<"all" | "approved" | "pending">("all");
   const [searchQuery, setSearchQuery] = useState("");
+  const [adminUser, setAdminUser] = useState<AdminUser | null>(null);
+  const [selectedSpot, setSelectedSpot] = useState<Spot | null>(null);
+  const [editForm, setEditForm] = useState<Partial<Spot>>({});
+  const [processing, setProcessing] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    fetchSpots();
+    fetchAdminAndSpots();
   }, []);
 
-  async function fetchSpots() {
+  async function fetchAdminAndSpots() {
     const supabase = createClient();
-    const { data, error } = await supabase
-      .from("spots")
-      .select("*")
-      .order("created_at", { ascending: false });
+
+    // Get current user's admin info
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+
+    const { data: adminData } = await supabase
+      .from("admin_users")
+      .select("role, scope_values")
+      .eq("user_id", user.id)
+      .single();
+
+    if (adminData) {
+      setAdminUser(adminData);
+    }
+
+    // Fetch spots - scoped for city admins
+    let query = supabase.from("spots").select("*").order("created_at", { ascending: false });
+
+    // City admins only see their assigned cities
+    if (adminData?.role === "city_admin" && adminData.scope_values.length > 0) {
+      query = query.in("city_id", adminData.scope_values);
+    }
+
+    const { data, error } = await query;
 
     if (!error && data) {
       setSpots(data);
@@ -38,15 +74,64 @@ export default function AdminSpotsPage() {
   }
 
   async function toggleApproval(spotId: string, currentStatus: boolean) {
+    setError(null);
     const supabase = createClient();
     const { error } = await supabase
       .from("spots")
       .update({ approved: !currentStatus })
       .eq("id", spotId);
 
-    if (!error) {
-      setSpots(spots.map(s => s.id === spotId ? { ...s, approved: !currentStatus } : s));
+    if (error) {
+      setError("Failed to update approval status");
+      return;
     }
+    setSpots(spots.map(s => s.id === spotId ? { ...s, approved: !currentStatus } : s));
+  }
+
+  async function handleEditSpot() {
+    if (!selectedSpot) return;
+    setProcessing(true);
+    setError(null);
+
+    const supabase = createClient();
+    const { error } = await supabase
+      .from("spots")
+      .update({
+        name: editForm.name,
+        description: editForm.description,
+        types: editForm.types,
+        vibes: editForm.vibes,
+        google_maps_url: editForm.google_maps_url,
+        website_url: editForm.website_url,
+        twitter_url: editForm.twitter_url,
+        instagram_url: editForm.instagram_url,
+      })
+      .eq("id", selectedSpot.id);
+
+    if (error) {
+      setError("Failed to update spot");
+      setProcessing(false);
+      return;
+    }
+
+    setSpots(spots.map(s => s.id === selectedSpot.id ? { ...s, ...editForm } : s));
+    setSelectedSpot(null);
+    setEditForm({});
+    setProcessing(false);
+  }
+
+  function openEditModal(spot: Spot) {
+    setSelectedSpot(spot);
+    setEditForm({
+      name: spot.name,
+      description: spot.description,
+      types: spot.types,
+      vibes: spot.vibes || [],
+      google_maps_url: spot.google_maps_url,
+      website_url: spot.website_url,
+      twitter_url: spot.twitter_url,
+      instagram_url: spot.instagram_url,
+    });
   }
 
   const filteredSpots = spots.filter(spot => {
@@ -71,12 +156,21 @@ export default function AdminSpotsPage() {
       <div className="flex items-center justify-between mb-8">
         <div>
           <h1 className="text-2xl font-bold text-[var(--text-primary)]">Spots</h1>
-          <p className="text-[var(--text-secondary)] mt-1">Manage all spots across cities</p>
+          <p className="text-[var(--text-secondary)] mt-1">
+            {adminUser?.role === "city_admin"
+              ? `Managing spots in: ${adminUser.scope_values.join(", ")}`
+              : "Manage all spots across cities"}
+          </p>
         </div>
-        <button className="px-4 py-2 bg-[var(--brand-lime)] hover:bg-[var(--brand-lime)]/90 text-[#0a0a0b] rounded-lg font-semibold transition-colors">
-          Add Spot
-        </button>
       </div>
+
+      {/* Error Message */}
+      {error && (
+        <div className="mb-4 p-3 bg-red-500/15 border border-red-500/30 rounded-lg text-red-400 text-sm">
+          {error}
+          <button onClick={() => setError(null)} className="ml-2 underline">Dismiss</button>
+        </div>
+      )}
 
       {/* Filters */}
       <div className="flex flex-col sm:flex-row gap-4 mb-6">
@@ -166,7 +260,10 @@ export default function AdminSpotsPage() {
                       >
                         {spot.approved ? "Unapprove" : "Approve"}
                       </button>
-                      <button className="px-3 py-1 text-xs font-medium bg-[var(--bg-dark)] text-[var(--text-secondary)] rounded hover:text-[var(--text-primary)] transition-colors">
+                      <button
+                        onClick={() => openEditModal(spot)}
+                        className="px-3 py-1 text-xs font-medium bg-[var(--bg-dark)] text-[var(--text-secondary)] rounded hover:text-[var(--text-primary)] transition-colors"
+                      >
                         Edit
                       </button>
                     </div>
@@ -177,6 +274,116 @@ export default function AdminSpotsPage() {
           </tbody>
         </table>
       </div>
+
+      {/* Edit Modal */}
+      {selectedSpot && (
+        <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4">
+          <div className="bg-[var(--bg-card)] border border-[var(--border)] rounded-xl max-w-lg w-full p-6 max-h-[90vh] overflow-y-auto">
+            <h2 className="text-xl font-bold text-[var(--text-primary)] mb-4">
+              Edit Spot
+            </h2>
+
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-[var(--text-primary)] mb-1">Name</label>
+                <input
+                  type="text"
+                  value={editForm.name || ""}
+                  onChange={(e) => setEditForm({ ...editForm, name: e.target.value })}
+                  className="w-full px-3 py-2 bg-[var(--bg-dark)] border border-[var(--border)] rounded-lg text-[var(--text-primary)] focus:outline-none focus:border-[var(--brand-lime)]/50"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-[var(--text-primary)] mb-1">Description</label>
+                <textarea
+                  value={editForm.description || ""}
+                  onChange={(e) => setEditForm({ ...editForm, description: e.target.value })}
+                  rows={3}
+                  className="w-full px-3 py-2 bg-[var(--bg-dark)] border border-[var(--border)] rounded-lg text-[var(--text-primary)] focus:outline-none focus:border-[var(--brand-lime)]/50 resize-none"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-[var(--text-primary)] mb-1">Types (comma separated)</label>
+                <input
+                  type="text"
+                  value={(editForm.types || []).join(", ")}
+                  onChange={(e) => setEditForm({ ...editForm, types: e.target.value.split(",").map(t => t.trim()).filter(Boolean) })}
+                  className="w-full px-3 py-2 bg-[var(--bg-dark)] border border-[var(--border)] rounded-lg text-[var(--text-primary)] focus:outline-none focus:border-[var(--brand-lime)]/50"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-[var(--text-primary)] mb-1">Vibes (comma separated)</label>
+                <input
+                  type="text"
+                  value={(editForm.vibes || []).join(", ")}
+                  onChange={(e) => setEditForm({ ...editForm, vibes: e.target.value.split(",").map(t => t.trim()).filter(Boolean) })}
+                  className="w-full px-3 py-2 bg-[var(--bg-dark)] border border-[var(--border)] rounded-lg text-[var(--text-primary)] focus:outline-none focus:border-[var(--brand-lime)]/50"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-[var(--text-primary)] mb-1">Google Maps URL</label>
+                <input
+                  type="text"
+                  value={editForm.google_maps_url || ""}
+                  onChange={(e) => setEditForm({ ...editForm, google_maps_url: e.target.value || null })}
+                  className="w-full px-3 py-2 bg-[var(--bg-dark)] border border-[var(--border)] rounded-lg text-[var(--text-primary)] focus:outline-none focus:border-[var(--brand-lime)]/50"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-[var(--text-primary)] mb-1">Website URL</label>
+                <input
+                  type="text"
+                  value={editForm.website_url || ""}
+                  onChange={(e) => setEditForm({ ...editForm, website_url: e.target.value || null })}
+                  className="w-full px-3 py-2 bg-[var(--bg-dark)] border border-[var(--border)] rounded-lg text-[var(--text-primary)] focus:outline-none focus:border-[var(--brand-lime)]/50"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-[var(--text-primary)] mb-1">Twitter URL</label>
+                  <input
+                    type="text"
+                    value={editForm.twitter_url || ""}
+                    onChange={(e) => setEditForm({ ...editForm, twitter_url: e.target.value || null })}
+                    className="w-full px-3 py-2 bg-[var(--bg-dark)] border border-[var(--border)] rounded-lg text-[var(--text-primary)] focus:outline-none focus:border-[var(--brand-lime)]/50"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-[var(--text-primary)] mb-1">Instagram URL</label>
+                  <input
+                    type="text"
+                    value={editForm.instagram_url || ""}
+                    onChange={(e) => setEditForm({ ...editForm, instagram_url: e.target.value || null })}
+                    className="w-full px-3 py-2 bg-[var(--bg-dark)] border border-[var(--border)] rounded-lg text-[var(--text-primary)] focus:outline-none focus:border-[var(--brand-lime)]/50"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div className="flex gap-3 mt-6">
+              <button
+                onClick={handleEditSpot}
+                disabled={processing}
+                className="flex-1 px-4 py-2 bg-[var(--brand-lime)] hover:bg-[var(--brand-lime)]/90 text-[#0a0a0b] rounded-lg font-semibold transition-colors disabled:opacity-50"
+              >
+                {processing ? "Saving..." : "Save Changes"}
+              </button>
+              <button
+                onClick={() => { setSelectedSpot(null); setEditForm({}); }}
+                className="px-4 py-2 bg-[var(--bg-dark)] text-[var(--text-secondary)] rounded-lg font-semibold transition-colors hover:text-[var(--text-primary)]"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
