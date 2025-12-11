@@ -18,20 +18,20 @@ const filters: { value: SpotType | "all"; label: string; emoji: string; color: s
 
 const colorMap: Record<string, { active: string; inactive: string }> = {
   lime: {
-    active: "bg-[#c8ff00]/15 text-[#c8ff00] border-[#c8ff00]/30",
-    inactive: "bg-[#131316] text-[#71717a] border-[#272727] hover:bg-[#1a1a1f] hover:text-[#fafafa]",
+    active: "bg-[var(--accent-lime)]/15 text-[var(--accent-lime)] border-[var(--accent-lime)]/30",
+    inactive: "bg-[var(--bg-card)] text-[var(--text-secondary)] border-[var(--border)] hover:bg-[var(--bg-card-hover)] hover:text-[var(--text-primary)]",
   },
   purple: {
-    active: "bg-[#a855f7]/15 text-[#a855f7] border-[#a855f7]/30",
-    inactive: "bg-[#131316] text-[#71717a] border-[#272727] hover:bg-[#1a1a1f] hover:text-[#fafafa]",
+    active: "bg-[var(--accent-purple)]/15 text-[var(--accent-purple)] border-[var(--accent-purple)]/30",
+    inactive: "bg-[var(--bg-card)] text-[var(--text-secondary)] border-[var(--border)] hover:bg-[var(--bg-card-hover)] hover:text-[var(--text-primary)]",
   },
   orange: {
-    active: "bg-[#ff6b35]/15 text-[#ff6b35] border-[#ff6b35]/30",
-    inactive: "bg-[#131316] text-[#71717a] border-[#272727] hover:bg-[#1a1a1f] hover:text-[#fafafa]",
+    active: "bg-[var(--accent-orange)]/15 text-[var(--accent-orange)] border-[var(--accent-orange)]/30",
+    inactive: "bg-[var(--bg-card)] text-[var(--text-secondary)] border-[var(--border)] hover:bg-[var(--bg-card-hover)] hover:text-[var(--text-primary)]",
   },
   cyan: {
-    active: "bg-[#00d4ff]/15 text-[#00d4ff] border-[#00d4ff]/30",
-    inactive: "bg-[#131316] text-[#71717a] border-[#272727] hover:bg-[#1a1a1f] hover:text-[#fafafa]",
+    active: "bg-[var(--accent-cyan)]/15 text-[var(--accent-cyan)] border-[var(--accent-cyan)]/30",
+    inactive: "bg-[var(--bg-card)] text-[var(--text-secondary)] border-[var(--border)] hover:bg-[var(--bg-card-hover)] hover:text-[var(--text-primary)]",
   },
 };
 

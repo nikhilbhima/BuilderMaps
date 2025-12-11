@@ -22,13 +22,13 @@ export function RegionTabs({ regions, activeRegion, onRegionChange }: RegionTabs
               className={`relative px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg text-xs sm:text-sm font-medium transition-all duration-300 whitespace-nowrap ${
                 activeRegion === region
                   ? "text-[#0a0a0b]"
-                  : "text-[#71717a] hover:text-[#fafafa] hover:bg-[#1a1a1f]"
+                  : "text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-card-hover)]"
               }`}
             >
               {activeRegion === region && (
                 <motion.div
                   layoutId="activeTab"
-                  className="absolute inset-0 bg-[#c8ff00] rounded-lg"
+                  className="absolute inset-0 bg-[var(--brand-lime)] rounded-lg"
                   transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
                 />
               )}
@@ -38,7 +38,7 @@ export function RegionTabs({ regions, activeRegion, onRegionChange }: RegionTabs
         </div>
       </div>
       {/* Fade indicators for scroll */}
-      <div className="absolute right-0 top-0 bottom-2 w-8 bg-gradient-to-l from-[#0a0a0b] to-transparent pointer-events-none sm:hidden" />
+      <div className="absolute right-0 top-0 bottom-2 w-8 bg-gradient-to-l from-[var(--bg-dark)] to-transparent pointer-events-none sm:hidden" />
     </div>
   );
 }

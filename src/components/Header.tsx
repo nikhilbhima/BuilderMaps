@@ -37,7 +37,7 @@ export function Header() {
         <div className="flex items-center justify-between h-14 sm:h-16">
           <Link href="/" className="flex items-center gap-2 sm:gap-3">
             <motion.div
-              className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-[var(--accent-lime)] flex items-center justify-center"
+              className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-[var(--brand-lime)] flex items-center justify-center"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
             >

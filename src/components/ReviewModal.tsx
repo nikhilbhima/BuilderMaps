@@ -89,17 +89,17 @@ export function ReviewModal({ isOpen, onClose, spotName, spotId }: ReviewModalPr
             initial={{ opacity: 0, scale: 0.95, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 20 }}
-            className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[90%] max-w-md bg-[#131316] border border-[#272727] rounded-xl z-[60] overflow-hidden"
+            className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[90%] max-w-md bg-[var(--bg-card)] border border-[var(--border)] rounded-xl z-[60] overflow-hidden"
           >
             <form onSubmit={handleSubmit}>
               {/* Header */}
-              <div className="p-4 border-b border-[#272727]">
+              <div className="p-4 border-b border-[var(--border)]">
                 <div className="flex items-center justify-between">
                   <div>
-                    <h3 className="text-lg font-semibold text-[#fafafa]">
+                    <h3 className="text-lg font-semibold text-[var(--text-primary)]">
                       Leave a Review
                     </h3>
-                    <p className="text-sm text-[#71717a] mt-0.5">
+                    <p className="text-sm text-[var(--text-secondary)] mt-0.5">
                       {spotName}
                     </p>
                   </div>
@@ -107,7 +107,7 @@ export function ReviewModal({ isOpen, onClose, spotName, spotId }: ReviewModalPr
                     type="button"
                     onClick={handleClose}
                     disabled={isSubmitting}
-                    className="p-1.5 text-[#71717a] hover:text-[#fafafa] hover:bg-[#1a1a1f] rounded-lg transition-colors disabled:opacity-50"
+                    className="p-1.5 text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-card-hover)] rounded-lg transition-colors disabled:opacity-50"
                     aria-label="Close review modal"
                   >
                     <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -121,8 +121,8 @@ export function ReviewModal({ isOpen, onClose, spotName, spotId }: ReviewModalPr
               <div className="p-4 space-y-4">
                 {/* Rating */}
                 <div>
-                  <label className="block text-sm font-medium text-[#fafafa] mb-2">
-                    Rating <span className="text-[#ff6b35]">*</span>
+                  <label className="block text-sm font-medium text-[var(--text-primary)] mb-2">
+                    Rating <span className="text-red-500">*</span>
                   </label>
                   <div className="flex items-center gap-1">
                     {Array.from({ length: 5 }).map((_, i) => {
@@ -139,8 +139,8 @@ export function ReviewModal({ isOpen, onClose, spotName, spotId }: ReviewModalPr
                           <svg
                             className={`w-8 h-8 transition-colors ${
                               starValue <= (hoverRating || rating)
-                                ? "text-[#c8ff00]"
-                                : "text-[#3f3f46]"
+                                ? "text-[var(--brand-lime)]"
+                                : "text-[var(--border)]"
                             }`}
                             fill="currentColor"
                             viewBox="0 0 20 20"
@@ -155,8 +155,8 @@ export function ReviewModal({ isOpen, onClose, spotName, spotId }: ReviewModalPr
 
                 {/* Review Text */}
                 <div>
-                  <label htmlFor="review-text" className="block text-sm font-medium text-[#fafafa] mb-2">
-                    Your Review <span className="text-[#ff6b35]">*</span>
+                  <label htmlFor="review-text" className="block text-sm font-medium text-[var(--text-primary)] mb-2">
+                    Your Review <span className="text-red-500">*</span>
                   </label>
                   <textarea
                     id="review-text"
@@ -166,24 +166,24 @@ export function ReviewModal({ isOpen, onClose, spotName, spotId }: ReviewModalPr
                     rows={4}
                     maxLength={MAX_REVIEW_LENGTH}
                     disabled={isSubmitting}
-                    className="w-full px-3 py-2 bg-[#1a1a1f] border border-[#272727] rounded-lg text-[#fafafa] placeholder-[#52525b] focus:outline-none focus:border-[#c8ff00]/50 transition-colors resize-none disabled:opacity-50"
+                    className="w-full px-3 py-2 bg-[var(--bg-card-hover)] border border-[var(--border)] rounded-lg text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:outline-none focus:border-[var(--brand-lime)]/50 transition-colors resize-none disabled:opacity-50"
                     required
                   />
-                  <p className={`text-xs mt-1 ${reviewText.length >= MAX_REVIEW_LENGTH ? "text-[#ff6b35]" : "text-[#71717a]"}`}>
+                  <p className={`text-xs mt-1 ${reviewText.length >= MAX_REVIEW_LENGTH ? "text-red-500" : "text-[var(--text-secondary)]"}`}>
                     {reviewText.length}/{MAX_REVIEW_LENGTH} characters
                   </p>
                 </div>
 
                 {/* User Info */}
                 {user && (
-                  <div className="flex items-center gap-2 p-3 bg-[#1a1a1f] border border-[#272727] rounded-lg">
-                    <div className="w-8 h-8 rounded-full bg-[#272727] flex items-center justify-center text-sm font-medium text-[#c8ff00]">
+                  <div className="flex items-center gap-2 p-3 bg-[var(--bg-card-hover)] border border-[var(--border)] rounded-lg">
+                    <div className="w-8 h-8 rounded-full bg-[var(--border)] flex items-center justify-center text-sm font-medium text-[var(--brand-lime)]">
                       {user.displayName?.[0]?.toUpperCase() || user.handle[0].toUpperCase()}
                     </div>
                     <div className="flex-1">
                       <div className="flex items-center gap-1.5">
                         {user.provider === "x" ? (
-                          <svg className="w-3 h-3 text-[#71717a]" viewBox="0 0 24 24" fill="currentColor">
+                          <svg className="w-3 h-3 text-[var(--text-secondary)]" viewBox="0 0 24 24" fill="currentColor">
                             <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
                           </svg>
                         ) : (
@@ -191,30 +191,30 @@ export function ReviewModal({ isOpen, onClose, spotName, spotId }: ReviewModalPr
                             <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
                           </svg>
                         )}
-                        <p className="text-sm font-medium text-[#fafafa]">
+                        <p className="text-sm font-medium text-[var(--text-primary)]">
                           {user.displayName || user.handle}
                         </p>
                       </div>
-                      <p className="text-xs text-[#71717a]">Posting as</p>
+                      <p className="text-xs text-[var(--text-secondary)]">Posting as</p>
                     </div>
                   </div>
                 )}
               </div>
 
               {/* Footer */}
-              <div className="p-4 border-t border-[#272727] flex items-center justify-end gap-2">
+              <div className="p-4 border-t border-[var(--border)] flex items-center justify-end gap-2">
                 <button
                   type="button"
                   onClick={handleClose}
                   disabled={isSubmitting}
-                  className="px-4 py-2 bg-[#1a1a1f] hover:bg-[#232328] border border-[#272727] text-[#fafafa] rounded-lg text-sm font-medium transition-colors disabled:opacity-50"
+                  className="px-4 py-2 bg-[var(--bg-card-hover)] hover:bg-[var(--bg-card)] border border-[var(--border)] text-[var(--text-primary)] rounded-lg text-sm font-medium transition-colors disabled:opacity-50"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={isSubmitting || rating === 0 || !reviewText.trim()}
-                  className="px-4 py-2 bg-[#c8ff00] hover:bg-[#c8ff00]/90 text-[#0a0a0b] rounded-lg text-sm font-semibold transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="px-4 py-2 bg-[var(--brand-lime)] hover:bg-[var(--brand-lime)]/90 text-[#0a0a0b] rounded-lg text-sm font-semibold transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {isSubmitting ? "Submitting..." : "Submit Review"}
                 </button>

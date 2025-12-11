@@ -326,13 +326,13 @@ export function NominationModal({ isOpen, onClose, defaultCityId }: NominationMo
             initial={{ opacity: 0, scale: 0.95, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 20 }}
-            className="fixed inset-4 md:inset-auto md:left-1/2 md:top-1/2 md:-translate-x-1/2 md:-translate-y-1/2 md:w-full md:max-w-lg bg-[#131316] border border-[#272727] rounded-2xl z-50 overflow-hidden flex flex-col max-h-[90vh]"
+            className="fixed inset-4 md:inset-auto md:left-1/2 md:top-1/2 md:-translate-x-1/2 md:-translate-y-1/2 md:w-full md:max-w-lg bg-[var(--bg-card)] border border-[var(--border)] rounded-2xl z-50 overflow-hidden flex flex-col max-h-[90vh]"
           >
             {/* Header */}
-            <div className="p-6 border-b border-[#272727]">
+            <div className="p-6 border-b border-[var(--border)]">
               <div className="flex items-center justify-between">
                 <div>
-                  <h2 className="text-xl font-bold text-[#fafafa]">
+                  <h2 className="text-xl font-bold text-[var(--text-primary)]">
                     {isSubmitted
                       ? "Thanks!"
                       : showRequestCity
@@ -340,12 +340,12 @@ export function NominationModal({ isOpen, onClose, defaultCityId }: NominationMo
                       : "Nominate a Spot"}
                   </h2>
                   {!isSubmitted && !showRequestCity && (
-                    <p className="text-sm text-[#71717a] mt-1">Step {step} of 3</p>
+                    <p className="text-sm text-[var(--text-secondary)] mt-1">Step {step} of 3</p>
                   )}
                 </div>
                 <button
                   onClick={handleClose}
-                  className="p-2 text-[#71717a] hover:text-[#fafafa] hover:bg-[#1a1a1f] rounded-lg transition-colors"
+                  className="p-2 text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-card-hover)] rounded-lg transition-colors"
                   aria-label="Close nomination form"
                 >
                   <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -370,9 +370,9 @@ export function NominationModal({ isOpen, onClose, defaultCityId }: NominationMo
                     animate={{ opacity: 1, y: 0 }}
                     className="text-center py-8"
                   >
-                    <div className="w-16 h-16 bg-[#c8ff00]/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <div className="w-16 h-16 bg-[var(--brand-lime)]/20 rounded-full flex items-center justify-center mx-auto mb-4">
                       <svg
-                        className="w-8 h-8 text-[#c8ff00]"
+                        className="w-8 h-8 text-[var(--brand-lime)]"
                         fill="none"
                         viewBox="0 0 24 24"
                         stroke="currentColor"
@@ -385,10 +385,10 @@ export function NominationModal({ isOpen, onClose, defaultCityId }: NominationMo
                         />
                       </svg>
                     </div>
-                    <h3 className="text-lg font-semibold text-[#fafafa] mb-2">
+                    <h3 className="text-lg font-semibold text-[var(--text-primary)] mb-2">
                       Request Received!
                     </h3>
-                    <p className="text-[#71717a] text-sm">
+                    <p className="text-[var(--text-secondary)] text-sm">
                       We&apos;ll review your city request and add it soon if there&apos;s demand.
                     </p>
                   </motion.div>
@@ -398,11 +398,11 @@ export function NominationModal({ isOpen, onClose, defaultCityId }: NominationMo
                     animate={{ opacity: 1, x: 0 }}
                     className="space-y-4"
                   >
-                    <p className="text-[#71717a] text-sm">
+                    <p className="text-[var(--text-secondary)] text-sm">
                       Don&apos;t see your city in the list? Request it and we&apos;ll consider adding it.
                     </p>
                     <div>
-                      <label className="block text-sm font-medium text-[#fafafa] mb-2">
+                      <label className="block text-sm font-medium text-[var(--text-primary)] mb-2">
                         City Name *
                       </label>
                       <input
@@ -410,20 +410,20 @@ export function NominationModal({ isOpen, onClose, defaultCityId }: NominationMo
                         value={requestedCity}
                         onChange={(e) => setRequestedCity(e.target.value)}
                         placeholder="e.g., Denver, USA"
-                        className="w-full px-4 py-3 bg-[#0d0d0d] border border-[#272727] rounded-lg text-[#fafafa] placeholder-[#52525b] focus:outline-none focus:border-[#c8ff00]/50"
+                        className="w-full px-4 py-3 bg-[var(--bg-dark)] border border-[var(--border)] rounded-lg text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:outline-none focus:border-[var(--brand-lime)]/50"
                       />
                     </div>
                     <div className="flex gap-3">
                       <button
                         onClick={() => setShowRequestCity(false)}
-                        className="flex-1 px-4 py-2 text-[#71717a] hover:text-[#fafafa] border border-[#272727] rounded-lg transition-colors"
+                        className="flex-1 px-4 py-2 text-[var(--text-secondary)] hover:text-[var(--text-primary)] border border-[var(--border)] rounded-lg transition-colors"
                       >
                         Back
                       </button>
                       <button
                         onClick={handleRequestCity}
                         disabled={!requestedCity.trim()}
-                        className="flex-1 px-4 py-2 bg-[#c8ff00] hover:bg-[#c8ff00]/90 disabled:bg-[#272727] disabled:text-[#52525b] text-[#0d0d0d] rounded-lg font-medium transition-colors"
+                        className="flex-1 px-4 py-2 bg-[var(--brand-lime)] hover:bg-[var(--brand-lime)]/90 disabled:bg-[var(--border)] disabled:text-[var(--text-muted)] text-[#0a0a0b] rounded-lg font-medium transition-colors"
                       >
                         Submit Request
                       </button>
@@ -436,9 +436,9 @@ export function NominationModal({ isOpen, onClose, defaultCityId }: NominationMo
                   animate={{ opacity: 1, y: 0 }}
                   className="text-center py-8"
                 >
-                  <div className="w-16 h-16 bg-[#c8ff00]/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <div className="w-16 h-16 bg-[var(--brand-lime)]/20 rounded-full flex items-center justify-center mx-auto mb-4">
                     <svg
-                      className="w-8 h-8 text-[#c8ff00]"
+                      className="w-8 h-8 text-[var(--brand-lime)]"
                       fill="none"
                       viewBox="0 0 24 24"
                       stroke="currentColor"
@@ -451,10 +451,10 @@ export function NominationModal({ isOpen, onClose, defaultCityId }: NominationMo
                       />
                     </svg>
                   </div>
-                  <h3 className="text-lg font-semibold text-[#fafafa] mb-2">
+                  <h3 className="text-lg font-semibold text-[var(--text-primary)] mb-2">
                     Nomination Received!
                   </h3>
-                  <p className="text-[#71717a] text-sm">
+                  <p className="text-[var(--text-secondary)] text-sm">
                     Thanks for helping the builder community. Your nomination will be reviewed and
                     added soon.
                   </p>
@@ -470,7 +470,7 @@ export function NominationModal({ isOpen, onClose, defaultCityId }: NominationMo
                       className="space-y-4"
                     >
                       <div>
-                        <label className="block text-sm font-medium text-[#fafafa] mb-2">
+                        <label className="block text-sm font-medium text-[var(--text-primary)] mb-2">
                           Spot Name *
                         </label>
                         <input
@@ -478,15 +478,15 @@ export function NominationModal({ isOpen, onClose, defaultCityId }: NominationMo
                           value={formData.name}
                           onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                           placeholder="e.g., The Hacker House"
-                          className="w-full px-4 py-3 bg-[#0d0d0d] border border-[#272727] rounded-lg text-[#fafafa] placeholder-[#52525b] focus:outline-none focus:border-[#c8ff00]/50"
+                          className="w-full px-4 py-3 bg-[var(--bg-dark)] border border-[var(--border)] rounded-lg text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:outline-none focus:border-[var(--brand-lime)]/50"
                         />
                       </div>
 
                       <div>
-                        <label className="block text-sm font-medium text-[#fafafa] mb-2">
+                        <label className="block text-sm font-medium text-[var(--text-primary)] mb-2">
                           City *
                           {isCityLocked && (
-                            <span className="ml-2 text-xs text-[#71717a] font-normal">
+                            <span className="ml-2 text-xs text-[var(--text-secondary)] font-normal">
                               (locked)
                             </span>
                           )}
@@ -497,7 +497,7 @@ export function NominationModal({ isOpen, onClose, defaultCityId }: NominationMo
                             setFormData({ ...formData, cityId: e.target.value, coordinates: null, googleMapsUrl: "" })
                           }
                           disabled={isCityLocked}
-                          className={`w-full px-4 py-3 bg-[#0d0d0d] border border-[#272727] rounded-lg text-[#fafafa] focus:outline-none focus:border-[#c8ff00]/50 ${
+                          className={`w-full px-4 py-3 bg-[var(--bg-dark)] border border-[var(--border)] rounded-lg text-[var(--text-primary)] focus:outline-none focus:border-[var(--brand-lime)]/50 ${
                             isCityLocked ? "opacity-60 cursor-not-allowed" : ""
                           }`}
                         >
@@ -513,7 +513,7 @@ export function NominationModal({ isOpen, onClose, defaultCityId }: NominationMo
                           <button
                             type="button"
                             onClick={() => setShowRequestCity(true)}
-                            className="mt-2 text-xs text-[#c8ff00] hover:text-[#c8ff00]/80 transition-colors"
+                            className="mt-2 text-xs text-[var(--brand-lime)] hover:text-[var(--brand-lime)]/80 transition-colors"
                           >
                             City not listed? Request it →
                           </button>
@@ -521,8 +521,8 @@ export function NominationModal({ isOpen, onClose, defaultCityId }: NominationMo
                       </div>
 
                       <div>
-                        <label className="block text-sm font-medium text-[#fafafa] mb-2">
-                          Type * <span className="text-[#71717a] font-normal">(select all that apply)</span>
+                        <label className="block text-sm font-medium text-[var(--text-primary)] mb-2">
+                          Type * <span className="text-[var(--text-secondary)] font-normal">(select all that apply)</span>
                         </label>
                         <div className="grid grid-cols-2 gap-2">
                           {spotTypes.map((type) => {
@@ -540,8 +540,8 @@ export function NominationModal({ isOpen, onClose, defaultCityId }: NominationMo
                                 }))}
                                 className={`flex items-center gap-2 px-4 py-3 rounded-lg border transition-colors ${
                                   isSelected
-                                    ? "bg-[#c8ff00]/15 border-[#c8ff00]/50 text-[#fafafa]"
-                                    : "bg-[#0d0d0d] border-[#272727] text-[#71717a] hover:border-[#3f3f46]"
+                                    ? "bg-[var(--brand-lime)]/15 border-[var(--brand-lime)]/50 text-[var(--text-primary)]"
+                                    : "bg-[var(--bg-dark)] border-[var(--border)] text-[var(--text-secondary)] hover:border-[var(--border-hover)]"
                                 }`}
                               >
                                 <span>{config.emoji}</span>
@@ -554,13 +554,13 @@ export function NominationModal({ isOpen, onClose, defaultCityId }: NominationMo
 
                       {/* Location - Just Google Maps URL input */}
                       <div>
-                        <label className="block text-sm font-medium text-[#fafafa] mb-2">
+                        <label className="block text-sm font-medium text-[var(--text-primary)] mb-2">
                           Google Maps Link *
                         </label>
                         <div className="space-y-2">
                           <div className="relative">
                             <svg
-                              className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#52525b]"
+                              className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--text-muted)]"
                               fill="none"
                               viewBox="0 0 24 24"
                               stroke="currentColor"
@@ -583,21 +583,21 @@ export function NominationModal({ isOpen, onClose, defaultCityId }: NominationMo
                               value={formData.googleMapsUrl}
                               onChange={(e) => handleUrlChange(e.target.value)}
                               placeholder="Paste Google Maps link here..."
-                              className="w-full pl-10 pr-10 py-3 bg-[#0d0d0d] border border-[#272727] rounded-lg text-[#fafafa] placeholder-[#52525b] text-sm focus:outline-none focus:border-[#c8ff00]/50"
+                              className="w-full pl-10 pr-10 py-3 bg-[var(--bg-dark)] border border-[var(--border)] rounded-lg text-[var(--text-primary)] placeholder-[var(--text-muted)] text-sm focus:outline-none focus:border-[var(--brand-lime)]/50"
                             />
                             {isResolvingUrl && (
                               <div className="absolute right-3 top-1/2 -translate-y-1/2">
-                                <div className="w-4 h-4 border-2 border-[#c8ff00] border-t-transparent rounded-full animate-spin" />
+                                <div className="w-4 h-4 border-2 border-[var(--brand-lime)] border-t-transparent rounded-full animate-spin" />
                               </div>
                             )}
                           </div>
                           {urlError && <p className="text-xs text-red-400">{urlError}</p>}
                           {formData.coordinates ? (
-                            <p className="text-xs text-[#c8ff00]">
+                            <p className="text-xs text-[var(--brand-lime)]">
                               ✓ Location detected
                             </p>
                           ) : (
-                            <p className="text-xs text-[#71717a]">
+                            <p className="text-xs text-[var(--text-secondary)]">
                               Go to Google Maps, find the spot, click &quot;Share&quot; → &quot;Copy link&quot; and paste above
                             </p>
                           )}
@@ -616,7 +616,7 @@ export function NominationModal({ isOpen, onClose, defaultCityId }: NominationMo
                       className="space-y-4"
                     >
                       <div>
-                        <label className="block text-sm font-medium text-[#fafafa] mb-2">
+                        <label className="block text-sm font-medium text-[var(--text-primary)] mb-2">
                           Brief Description *
                         </label>
                         <textarea
@@ -626,13 +626,13 @@ export function NominationModal({ isOpen, onClose, defaultCityId }: NominationMo
                           }
                           placeholder="What makes this spot great for builders? (e.g., fast wifi, great coffee, friendly community)"
                           rows={3}
-                          className="w-full px-4 py-3 bg-[#0d0d0d] border border-[#272727] rounded-lg text-[#fafafa] placeholder-[#52525b] resize-none focus:outline-none focus:border-[#c8ff00]/50"
+                          className="w-full px-4 py-3 bg-[var(--bg-dark)] border border-[var(--border)] rounded-lg text-[var(--text-primary)] placeholder-[var(--text-muted)] resize-none focus:outline-none focus:border-[var(--brand-lime)]/50"
                         />
                       </div>
 
                       <div>
-                        <label className="block text-sm font-medium text-[#fafafa] mb-2">
-                          Vibes * <span className="text-[#71717a] font-normal">(select up to 5)</span>
+                        <label className="block text-sm font-medium text-[var(--text-primary)] mb-2">
+                          Vibes * <span className="text-[var(--text-secondary)] font-normal">(select up to 5)</span>
                         </label>
                         <div className="flex flex-wrap gap-2">
                           {vibeOptions.map((vibe) => (
@@ -642,8 +642,8 @@ export function NominationModal({ isOpen, onClose, defaultCityId }: NominationMo
                               onClick={() => handleVibeToggle(vibe)}
                               className={`px-3 py-1.5 rounded-full text-sm border transition-colors ${
                                 formData.vibes.includes(vibe)
-                                  ? "bg-[#c8ff00]/15 border-[#c8ff00]/50 text-[#c8ff00]"
-                                  : "bg-[#0d0d0d] border-[#272727] text-[#71717a] hover:border-[#3f3f46]"
+                                  ? "bg-[var(--brand-lime)]/15 border-[var(--brand-lime)]/50 text-[var(--brand-lime)]"
+                                  : "bg-[var(--bg-dark)] border-[var(--border)] text-[var(--text-secondary)] hover:border-[var(--border-hover)]"
                               }`}
                             >
                               {vibe}
@@ -663,7 +663,7 @@ export function NominationModal({ isOpen, onClose, defaultCityId }: NominationMo
                       className="space-y-4"
                     >
                       <div>
-                        <label className="block text-sm font-medium text-[#fafafa] mb-2">
+                        <label className="block text-sm font-medium text-[var(--text-primary)] mb-2">
                           Website
                         </label>
                         <input
@@ -673,16 +673,16 @@ export function NominationModal({ isOpen, onClose, defaultCityId }: NominationMo
                             setFormData({ ...formData, websiteUrl: e.target.value })
                           }
                           placeholder="https://..."
-                          className="w-full px-4 py-3 bg-[#0d0d0d] border border-[#272727] rounded-lg text-[#fafafa] placeholder-[#52525b] focus:outline-none focus:border-[#c8ff00]/50"
+                          className="w-full px-4 py-3 bg-[var(--bg-dark)] border border-[var(--border)] rounded-lg text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:outline-none focus:border-[var(--brand-lime)]/50"
                         />
                       </div>
 
                       <div>
-                        <label className="block text-sm font-medium text-[#fafafa] mb-2">
+                        <label className="block text-sm font-medium text-[var(--text-primary)] mb-2">
                           X (Twitter)
                         </label>
                         <div className="relative">
-                          <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[#52525b]">
+                          <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[var(--text-muted)]">
                             @
                           </span>
                           <input
@@ -695,17 +695,17 @@ export function NominationModal({ isOpen, onClose, defaultCityId }: NominationMo
                               })
                             }
                             placeholder="spothandle"
-                            className="w-full pl-8 pr-4 py-3 bg-[#0d0d0d] border border-[#272727] rounded-lg text-[#fafafa] placeholder-[#52525b] focus:outline-none focus:border-[#c8ff00]/50"
+                            className="w-full pl-8 pr-4 py-3 bg-[var(--bg-dark)] border border-[var(--border)] rounded-lg text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:outline-none focus:border-[var(--brand-lime)]/50"
                           />
                         </div>
                       </div>
 
                       <div>
-                        <label className="block text-sm font-medium text-[#fafafa] mb-2">
+                        <label className="block text-sm font-medium text-[var(--text-primary)] mb-2">
                           Instagram
                         </label>
                         <div className="relative">
-                          <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[#52525b]">
+                          <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[var(--text-muted)]">
                             @
                           </span>
                           <input
@@ -718,13 +718,13 @@ export function NominationModal({ isOpen, onClose, defaultCityId }: NominationMo
                               })
                             }
                             placeholder="spothandle"
-                            className="w-full pl-8 pr-4 py-3 bg-[#0d0d0d] border border-[#272727] rounded-lg text-[#fafafa] placeholder-[#52525b] focus:outline-none focus:border-[#c8ff00]/50"
+                            className="w-full pl-8 pr-4 py-3 bg-[var(--bg-dark)] border border-[var(--border)] rounded-lg text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:outline-none focus:border-[var(--brand-lime)]/50"
                           />
                         </div>
                       </div>
 
                       <div>
-                        <label className="block text-sm font-medium text-[#fafafa] mb-2">
+                        <label className="block text-sm font-medium text-[var(--text-primary)] mb-2">
                           LinkedIn
                         </label>
                         <input
@@ -734,7 +734,7 @@ export function NominationModal({ isOpen, onClose, defaultCityId }: NominationMo
                             setFormData({ ...formData, linkedinUrl: e.target.value })
                           }
                           placeholder="https://linkedin.com/company/..."
-                          className="w-full px-4 py-3 bg-[#0d0d0d] border border-[#272727] rounded-lg text-[#fafafa] placeholder-[#52525b] focus:outline-none focus:border-[#c8ff00]/50"
+                          className="w-full px-4 py-3 bg-[var(--bg-dark)] border border-[var(--border)] rounded-lg text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:outline-none focus:border-[var(--brand-lime)]/50"
                         />
                       </div>
                     </motion.div>
@@ -745,12 +745,12 @@ export function NominationModal({ isOpen, onClose, defaultCityId }: NominationMo
 
             {/* Footer */}
             {!isSubmitted && !showRequestCity && (
-              <div className="p-6 border-t border-[#272727]">
+              <div className="p-6 border-t border-[var(--border)]">
                 <div className="flex items-center justify-between gap-3">
                   {step > 1 ? (
                     <button
                       onClick={() => setStep(step - 1)}
-                      className="px-4 py-2 text-[#71717a] hover:text-[#fafafa] transition-colors"
+                      className="px-4 py-2 text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors"
                     >
                       Back
                     </button>
@@ -762,7 +762,7 @@ export function NominationModal({ isOpen, onClose, defaultCityId }: NominationMo
                     <button
                       onClick={() => setStep(step + 1)}
                       disabled={step === 1 ? !isStep1Valid : !isStep2Valid}
-                      className="px-6 py-2 bg-[#c8ff00] hover:bg-[#c8ff00]/90 disabled:bg-[#272727] disabled:text-[#52525b] text-[#0d0d0d] rounded-lg font-medium transition-colors"
+                      className="px-6 py-2 bg-[var(--brand-lime)] hover:bg-[var(--brand-lime)]/90 disabled:bg-[var(--border)] disabled:text-[var(--text-muted)] text-[#0a0a0b] rounded-lg font-medium transition-colors"
                     >
                       Next
                     </button>
@@ -770,7 +770,7 @@ export function NominationModal({ isOpen, onClose, defaultCityId }: NominationMo
                     <button
                       onClick={handleSubmit}
                       disabled={isSubmitting}
-                      className="px-6 py-2 bg-[#c8ff00] hover:bg-[#c8ff00]/90 disabled:opacity-50 text-[#0d0d0d] rounded-lg font-medium transition-colors flex items-center gap-2"
+                      className="px-6 py-2 bg-[var(--brand-lime)] hover:bg-[var(--brand-lime)]/90 disabled:opacity-50 text-[#0a0a0b] rounded-lg font-medium transition-colors flex items-center gap-2"
                     >
                       {isSubmitting ? (
                         <>

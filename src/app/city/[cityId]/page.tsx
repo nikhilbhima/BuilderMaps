@@ -25,25 +25,25 @@ function SpotDetailPanel({ spot, onClose }: { spot: Spot; onClose: () => void })
       initial={{ opacity: 0, x: 20 }}
       animate={{ opacity: 1, x: 0 }}
       exit={{ opacity: 0, x: 20 }}
-      className="bg-[#131316] border border-[#272727] rounded-xl overflow-hidden h-fit sticky top-20"
+      className="bg-[var(--bg-card)] border border-[var(--border)] rounded-xl overflow-hidden h-fit sticky top-20"
     >
       {/* Header */}
-      <div className="p-4 sm:p-5 border-b border-[#272727]">
+      <div className="p-4 sm:p-5 border-b border-[var(--border)]">
         <div className="flex items-start justify-between gap-3">
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2 mb-1">
               <span className="text-xl">{typeConfig.emoji}</span>
-              <h2 className="text-lg sm:text-xl font-semibold text-[#fafafa] truncate">
+              <h2 className="text-lg sm:text-xl font-semibold text-[var(--text-primary)] truncate">
                 {spot.name}
               </h2>
             </div>
-            <p className="text-sm text-[#71717a] capitalize">
+            <p className="text-sm text-[var(--text-secondary)] capitalize">
               {spot.types.map(t => t.replace("-", " ")).join(" · ")}
             </p>
           </div>
           <button
             onClick={onClose}
-            className="p-2 text-[#71717a] hover:text-[#fafafa] hover:bg-[#1a1a1f] rounded-lg transition-colors shrink-0"
+            className="p-2 text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-card-hover)] rounded-lg transition-colors shrink-0"
             aria-label="Close detail panel"
           >
             <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -56,21 +56,21 @@ function SpotDetailPanel({ spot, onClose }: { spot: Spot; onClose: () => void })
       {/* Content */}
       <div className="p-4 sm:p-5 space-y-4">
         {/* Description */}
-        <p className="text-[#a1a1aa] text-sm leading-relaxed">
+        <p className="text-[var(--text-secondary)] text-sm leading-relaxed">
           {spot.description}
         </p>
 
         {/* Vibes */}
         {spot.vibes && spot.vibes.length > 0 && (
           <div>
-            <h3 className="text-xs font-medium text-[#71717a] uppercase tracking-wider mb-2">
+            <h3 className="text-xs font-medium text-[var(--text-secondary)] uppercase tracking-wider mb-2">
               Vibes
             </h3>
             <div className="flex flex-wrap gap-1.5">
               {spot.vibes.map((vibe) => (
                 <span
                   key={vibe}
-                  className="px-2 py-1 bg-[#c8ff00]/10 text-[#c8ff00] rounded-md text-xs font-medium"
+                  className="px-2 py-1 bg-[var(--brand-lime)]/10 text-[var(--brand-lime)] rounded-md text-xs font-medium"
                 >
                   {vibe}
                 </span>
@@ -80,13 +80,13 @@ function SpotDetailPanel({ spot, onClose }: { spot: Spot; onClose: () => void })
         )}
 
         {/* Stats */}
-        <div className="flex items-center gap-4 py-3 border-y border-[#272727]">
-          <div className="flex items-center gap-1.5 text-[#fafafa]">
-            <svg className="w-4 h-4 text-[#c8ff00]" fill="currentColor" viewBox="0 0 20 20">
+        <div className="flex items-center gap-4 py-3 border-y border-[var(--border)]">
+          <div className="flex items-center gap-1.5 text-[var(--text-primary)]">
+            <svg className="w-4 h-4 text-[var(--brand-lime)]" fill="currentColor" viewBox="0 0 20 20">
               <path d="M2 10.5a1.5 1.5 0 113 0v6a1.5 1.5 0 01-3 0v-6zM6 10.333v5.43a2 2 0 001.106 1.79l.05.025A4 4 0 008.943 18h5.416a2 2 0 001.962-1.608l1.2-6A2 2 0 0015.56 8H12V4a2 2 0 00-2-2 1 1 0 00-1 1v.667a4 4 0 01-.8 2.4L6.8 7.933a4 4 0 00-.8 2.4z" />
             </svg>
             <span className="text-sm font-medium">{getSpotUpvoteCount(spot.id)}</span>
-            <span className="text-xs text-[#71717a]">upvotes</span>
+            <span className="text-xs text-[var(--text-secondary)]">upvotes</span>
           </div>
         </div>
 
@@ -97,14 +97,14 @@ function SpotDetailPanel({ spot, onClose }: { spot: Spot; onClose: () => void })
               href={spot.googleMapsUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center gap-2 px-3 py-2.5 bg-[#1a1a1f] hover:bg-[#232328] border border-[#272727] rounded-lg text-[#fafafa] text-sm transition-colors group"
+              className="flex items-center gap-2 px-3 py-2.5 bg-[var(--bg-card-hover)] hover:bg-[var(--bg-card-hover)] border border-[var(--border)] rounded-lg text-[var(--text-primary)] text-sm transition-colors group"
             >
-              <svg className="w-4 h-4 text-[#71717a] group-hover:text-[#c8ff00] transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <svg className="w-4 h-4 text-[var(--text-secondary)] group-hover:text-[var(--brand-lime)] transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
               </svg>
               <span>Open in Google Maps</span>
-              <svg className="w-3 h-3 ml-auto text-[#52525b]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <svg className="w-3 h-3 ml-auto text-[var(--text-muted)]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
               </svg>
             </a>
@@ -115,13 +115,13 @@ function SpotDetailPanel({ spot, onClose }: { spot: Spot; onClose: () => void })
               href={spot.websiteUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center gap-2 px-3 py-2.5 bg-[#1a1a1f] hover:bg-[#232328] border border-[#272727] rounded-lg text-[#fafafa] text-sm transition-colors group"
+              className="flex items-center gap-2 px-3 py-2.5 bg-[var(--bg-card-hover)] hover:bg-[var(--bg-card-hover)] border border-[var(--border)] rounded-lg text-[var(--text-primary)] text-sm transition-colors group"
             >
-              <svg className="w-4 h-4 text-[#71717a] group-hover:text-[#c8ff00] transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <svg className="w-4 h-4 text-[var(--text-secondary)] group-hover:text-[var(--brand-lime)] transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" />
               </svg>
               <span>Visit Website</span>
-              <svg className="w-3 h-3 ml-auto text-[#52525b]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <svg className="w-3 h-3 ml-auto text-[var(--text-muted)]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
               </svg>
             </a>
@@ -134,7 +134,7 @@ function SpotDetailPanel({ spot, onClose }: { spot: Spot; onClose: () => void })
                 href={spot.twitterUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="p-2 bg-[#1a1a1f] hover:bg-[#232328] border border-[#272727] rounded-lg text-[#71717a] hover:text-[#fafafa] transition-colors"
+                className="p-2 bg-[var(--bg-card-hover)] hover:bg-[var(--bg-card-hover)] border border-[var(--border)] rounded-lg text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors"
                 aria-label="Twitter/X"
               >
                 <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
@@ -147,7 +147,7 @@ function SpotDetailPanel({ spot, onClose }: { spot: Spot; onClose: () => void })
                 href={spot.instagramUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="p-2 bg-[#1a1a1f] hover:bg-[#232328] border border-[#272727] rounded-lg text-[#71717a] hover:text-[#fafafa] transition-colors"
+                className="p-2 bg-[var(--bg-card-hover)] hover:bg-[var(--bg-card-hover)] border border-[var(--border)] rounded-lg text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors"
                 aria-label="Instagram"
               >
                 <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
@@ -160,7 +160,7 @@ function SpotDetailPanel({ spot, onClose }: { spot: Spot; onClose: () => void })
                 href={spot.linkedinUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="p-2 bg-[#1a1a1f] hover:bg-[#232328] border border-[#272727] rounded-lg text-[#71717a] hover:text-[#fafafa] transition-colors"
+                className="p-2 bg-[var(--bg-card-hover)] hover:bg-[var(--bg-card-hover)] border border-[var(--border)] rounded-lg text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors"
                 aria-label="LinkedIn"
               >
                 <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
@@ -172,8 +172,8 @@ function SpotDetailPanel({ spot, onClose }: { spot: Spot; onClose: () => void })
         </div>
 
         {/* Reviews Section */}
-        <div className="border-t border-[#272727] pt-4">
-          <h3 className="text-xs font-medium text-[#71717a] uppercase tracking-wider mb-3">
+        <div className="border-t border-[var(--border)] pt-4">
+          <h3 className="text-xs font-medium text-[var(--text-secondary)] uppercase tracking-wider mb-3">
             Reviews {spot.reviews && spot.reviews.length > 0 && `(${spot.reviews.length})`}
           </h3>
 
@@ -194,16 +194,16 @@ function SpotDetailPanel({ spot, onClose }: { spot: Spot; onClose: () => void })
                 return (
                   <div
                     key={review.id}
-                    className="p-3 bg-[#1a1a1f] border border-[#272727] rounded-lg"
+                    className="p-3 bg-[var(--bg-card-hover)] border border-[var(--border)] rounded-lg"
                   >
                     <div className="flex items-start gap-2">
-                      <div className="w-8 h-8 rounded-full bg-[#272727] flex items-center justify-center text-sm font-medium text-[#c8ff00] shrink-0">
+                      <div className="w-8 h-8 rounded-full bg-[var(--border)] flex items-center justify-center text-sm font-medium text-[var(--brand-lime)] shrink-0">
                         {review.authorName?.[0]?.toUpperCase() || review.authorHandle[0].toUpperCase()}
                       </div>
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-1.5 mb-1">
                           {provider === "x" ? (
-                            <svg className="w-3 h-3 text-[#71717a] shrink-0" viewBox="0 0 24 24" fill="currentColor">
+                            <svg className="w-3 h-3 text-[var(--text-secondary)] shrink-0" viewBox="0 0 24 24" fill="currentColor">
                               <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
                             </svg>
                           ) : (
@@ -215,15 +215,15 @@ function SpotDetailPanel({ spot, onClose }: { spot: Spot; onClose: () => void })
                             href={profileUrl}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="text-sm font-medium text-[#fafafa] hover:text-[#c8ff00] transition-colors truncate"
+                            className="text-sm font-medium text-[var(--text-primary)] hover:text-[var(--brand-lime)] transition-colors truncate"
                           >
                             {review.authorName || review.authorHandle}
                           </a>
-                          <span className="text-xs text-[#52525b]">
+                          <span className="text-xs text-[var(--text-muted)]">
                             · {new Date(review.createdAt).toLocaleDateString()}
                           </span>
                         </div>
-                        <p className="text-xs text-[#a1a1aa] leading-relaxed">
+                        <p className="text-xs text-[var(--text-secondary)] leading-relaxed">
                           {review.text}
                         </p>
                       </div>
@@ -236,7 +236,7 @@ function SpotDetailPanel({ spot, onClose }: { spot: Spot; onClose: () => void })
 
           {/* No reviews message */}
           {(!spot.reviews || spot.reviews.length === 0) && (
-            <p className="text-sm text-[#52525b] text-center py-4">
+            <p className="text-sm text-[var(--text-muted)] text-center py-4">
               No reviews yet. Be the first to share your experience!
             </p>
           )}
@@ -274,16 +274,16 @@ export default function CityPage() {
 
   if (!city) {
     return (
-      <div className="min-h-screen flex flex-col bg-[#0a0a0b]">
+      <div className="min-h-screen flex flex-col bg-[var(--bg-dark)]">
         <Header />
         <main className="flex-1 flex items-center justify-center">
           <div className="text-center">
-            <h1 className="text-2xl font-semibold text-[#fafafa] mb-4">
+            <h1 className="text-2xl font-semibold text-[var(--text-primary)] mb-4">
               City not found
             </h1>
             <Link
               href="/"
-              className="text-[#c8ff00] hover:text-[#c8ff00]/80 transition-colors"
+              className="text-[var(--brand-lime)] hover:text-[var(--brand-lime)]/80 transition-colors"
             >
               ← Back to all cities
             </Link>
@@ -295,27 +295,27 @@ export default function CityPage() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#0a0a0b]">
+    <div className="min-h-screen flex flex-col bg-[var(--bg-dark)]">
       <Header />
 
       <main className="flex-1">
         {/* City Header */}
-        <section className="border-b border-[#272727]">
+        <section className="border-b border-[var(--border)]">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-8">
-            <div className="flex items-center gap-2 text-[#71717a] text-xs sm:text-sm mb-3 sm:mb-4">
-              <Link href="/" className="hover:text-[#fafafa] transition-colors">
+            <div className="flex items-center gap-2 text-[var(--text-secondary)] text-xs sm:text-sm mb-3 sm:mb-4">
+              <Link href="/" className="hover:text-[var(--text-primary)] transition-colors">
                 Cities
               </Link>
               <span>/</span>
-              <span className="text-[#fafafa]">{city.name}</span>
+              <span className="text-[var(--text-primary)]">{city.name}</span>
             </div>
 
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
               <div>
-                <h1 className="text-2xl sm:text-3xl font-bold text-[#fafafa] mb-0.5 sm:mb-1">
+                <h1 className="text-2xl sm:text-3xl font-bold text-[var(--text-primary)] mb-0.5 sm:mb-1">
                   {city.name}
                 </h1>
-                <p className="text-sm sm:text-base text-[#71717a]">
+                <p className="text-sm sm:text-base text-[var(--text-secondary)]">
                   {allSpots.length > 0
                     ? `${allSpots.length} spots where builders hang out`
                     : "No spots yet — be the first to add one"}
@@ -326,7 +326,7 @@ export default function CityPage() {
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
                 onClick={() => setIsNominationOpen(true)}
-                className="flex items-center justify-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-1.5 sm:py-2 bg-[#c8ff00] hover:bg-[#c8ff00]/90 text-[#0a0a0b] rounded-lg font-semibold text-sm sm:text-base transition-colors"
+                className="flex items-center justify-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-1.5 sm:py-2 bg-[var(--brand-lime)] hover:bg-[var(--brand-lime)]/90 text-[#0a0a0b] rounded-lg font-semibold text-sm sm:text-base transition-colors"
               >
                 <span className="text-base sm:text-lg">+</span>
                 <span>Nominate a Spot</span>
@@ -352,10 +352,10 @@ export default function CityPage() {
                 </div>
 
                 <div className="flex items-center justify-between mb-2 sm:mb-4">
-                  <h2 className="text-base sm:text-lg font-medium text-[#fafafa]">
+                  <h2 className="text-base sm:text-lg font-medium text-[var(--text-primary)]">
                     {sortedSpots.length} spots
                   </h2>
-                  <span className="text-xs sm:text-sm text-[#71717a] font-mono">
+                  <span className="text-xs sm:text-sm text-[var(--text-secondary)] font-mono">
                     Sorted by upvotes
                   </span>
                 </div>
@@ -373,10 +373,10 @@ export default function CityPage() {
                     ))
                   ) : (
                     <div className="text-center py-8">
-                      <p className="text-[#71717a]">No spots found for this filter.</p>
+                      <p className="text-[var(--text-secondary)]">No spots found for this filter.</p>
                       <button
                         onClick={() => setActiveFilter("all")}
-                        className="mt-2 text-sm text-[#c8ff00] hover:text-[#c8ff00]/80 transition-colors"
+                        className="mt-2 text-sm text-[var(--brand-lime)] hover:text-[var(--brand-lime)]/80 transition-colors"
                       >
                         Show all spots
                       </button>
@@ -399,15 +399,15 @@ export default function CityPage() {
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
                       exit={{ opacity: 0 }}
-                      className="bg-[#131316] border border-[#272727] rounded-xl p-8 text-center sticky top-20"
+                      className="bg-[var(--bg-card)] border border-[var(--border)] rounded-xl p-8 text-center sticky top-20"
                     >
-                      <div className="w-16 h-16 bg-[#1a1a1f] rounded-full flex items-center justify-center mx-auto mb-4">
-                        <svg className="w-8 h-8 text-[#3f3f46]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <div className="w-16 h-16 bg-[var(--bg-card-hover)] rounded-full flex items-center justify-center mx-auto mb-4">
+                        <svg className="w-8 h-8 text-[var(--text-muted)]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5M7.188 2.239l.777 2.897M5.136 7.965l-2.898-.777M13.95 4.05l-2.122 2.122m-5.657 5.656l-2.12 2.122" />
                         </svg>
                       </div>
-                      <h3 className="text-[#71717a] font-medium mb-1">Select a spot</h3>
-                      <p className="text-sm text-[#52525b]">
+                      <h3 className="text-[var(--text-secondary)] font-medium mb-1">Select a spot</h3>
+                      <p className="text-sm text-[var(--text-muted)]">
                         Click on any spot to see details
                       </p>
                     </motion.div>

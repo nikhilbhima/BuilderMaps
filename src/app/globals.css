@@ -4,6 +4,11 @@
 @import "@fontsource/space-grotesk/600.css";
 @import "@fontsource/space-grotesk/700.css";
 
+/* Brand color - always the same in both themes */
+:root {
+  --brand-lime: #c8ff00;
+}
+
 /* Dark theme (default) */
 :root,
 .dark {

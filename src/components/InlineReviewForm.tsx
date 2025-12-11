@@ -73,9 +73,9 @@ export function InlineReviewForm({ spotId, spotName, onReviewAdded }: InlineRevi
           maxLength={MAX_REVIEW_LENGTH}
           disabled={isSubmitting || !user}
           onClick={() => !user && openLoginModal()}
-          className="w-full px-3 py-2 bg-[#1a1a1f] border border-[#272727] rounded-lg text-[#fafafa] placeholder-[#52525b] focus:outline-none focus:border-[#c8ff00]/50 transition-colors resize-none disabled:opacity-50 text-sm"
+          className="w-full px-3 py-2 bg-[var(--bg-card-hover)] border border-[var(--border)] rounded-lg text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:outline-none focus:border-[var(--brand-lime)]/50 transition-colors resize-none disabled:opacity-50 text-sm"
         />
-        <div className="absolute bottom-2 right-2 text-xs text-[#52525b]">
+        <div className="absolute bottom-2 right-2 text-xs text-[var(--text-muted)]">
           {reviewText.length}/{MAX_REVIEW_LENGTH}
         </div>
       </div>
@@ -88,7 +88,7 @@ export function InlineReviewForm({ spotId, spotName, onReviewAdded }: InlineRevi
         <motion.p
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
-          className="text-xs text-[#c8ff00]"
+          className="text-xs text-[var(--brand-lime)]"
         >
           Review submitted successfully!
         </motion.p>
@@ -97,10 +97,10 @@ export function InlineReviewForm({ spotId, spotName, onReviewAdded }: InlineRevi
       <div className="flex items-center justify-between">
         {user && (
           <div className="flex items-center gap-2">
-            <div className="w-6 h-6 rounded-full bg-[#272727] flex items-center justify-center text-xs font-medium text-[#c8ff00]">
+            <div className="w-6 h-6 rounded-full bg-[var(--border)] flex items-center justify-center text-xs font-medium text-[var(--brand-lime)]">
               {user.displayName?.[0]?.toUpperCase() || user.handle[0].toUpperCase()}
             </div>
-            <span className="text-xs text-[#71717a]">
+            <span className="text-xs text-[var(--text-secondary)]">
               {user.displayName || `@${user.handle}`}
             </span>
           </div>
@@ -110,7 +110,7 @@ export function InlineReviewForm({ spotId, spotName, onReviewAdded }: InlineRevi
           disabled={isSubmitting || !reviewText.trim()}
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}
-          className="px-3 py-1.5 bg-[#c8ff00] hover:bg-[#c8ff00]/90 text-[#0a0a0b] rounded-lg text-xs font-semibold transition-colors disabled:opacity-50 disabled:cursor-not-allowed ml-auto"
+          className="px-3 py-1.5 bg-[var(--brand-lime)] hover:opacity-90 text-[#0a0a0b] rounded-lg text-xs font-semibold transition-colors disabled:opacity-50 disabled:cursor-not-allowed ml-auto"
         >
           {isSubmitting ? "Posting..." : "Post Review"}
         </motion.button>

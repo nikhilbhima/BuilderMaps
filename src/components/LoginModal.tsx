@@ -51,34 +51,34 @@ export function LoginModal() {
             initial={{ opacity: 0, scale: 0.95, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 20 }}
-            className="fixed inset-4 md:inset-auto md:left-1/2 md:top-1/2 md:-translate-x-1/2 md:-translate-y-1/2 md:w-full md:max-w-sm bg-[#131316] border border-[#272727] rounded-2xl z-50 overflow-hidden"
+            className="fixed inset-4 md:inset-auto md:left-1/2 md:top-1/2 md:-translate-x-1/2 md:-translate-y-1/2 md:w-full md:max-w-sm bg-[var(--bg-card)] border border-[var(--border)] rounded-2xl z-50 overflow-hidden"
           >
             {/* Header */}
-            <div className="p-6 border-b border-[#272727]">
+            <div className="p-6 border-b border-[var(--border)]">
               <div className="flex items-center justify-between">
-                <h2 className="text-xl font-bold text-[#fafafa]">Sign In</h2>
+                <h2 className="text-xl font-bold text-[var(--text-primary)]">Sign In</h2>
                 <button
                   onClick={closeLoginModal}
-                  className="p-2 text-[#71717a] hover:text-[#fafafa] hover:bg-[#1a1a1f] rounded-lg transition-colors"
+                  className="p-2 text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-card-hover)] rounded-lg transition-colors"
                 >
                   <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                   </svg>
                 </button>
               </div>
-              <p className="text-sm text-[#71717a] mt-2">
+              <p className="text-sm text-[var(--text-secondary)] mt-2">
                 Sign in to upvote spots, leave reviews, and nominate new places.
               </p>
             </div>
 
             {/* Content */}
             <div className="p-6 space-y-3">
-              {/* X Login */}
+              {/* X Login - always dark button for brand consistency */}
               <motion.button
                 whileHover={{ scale: 1.01 }}
                 whileTap={{ scale: 0.99 }}
                 onClick={handleXLogin}
-                className="w-full flex items-center justify-center gap-3 px-4 py-3 bg-[#fafafa] hover:bg-[#e4e4e7] text-[#0d0d0d] rounded-lg font-medium transition-colors"
+                className="w-full flex items-center justify-center gap-3 px-4 py-3 bg-black hover:bg-black/80 text-white rounded-lg font-medium transition-colors"
               >
                 <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
                   <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
@@ -86,7 +86,7 @@ export function LoginModal() {
                 Continue with X
               </motion.button>
 
-              {/* LinkedIn Login */}
+              {/* LinkedIn Login - always blue for brand consistency */}
               <motion.button
                 whileHover={{ scale: 1.01 }}
                 whileTap={{ scale: 0.99 }}
@@ -102,7 +102,7 @@ export function LoginModal() {
 
             {/* Footer */}
             <div className="px-6 pb-6">
-              <p className="text-xs text-[#52525b] text-center">
+              <p className="text-xs text-[var(--text-muted)] text-center">
                 By signing in, you agree to help the builder community discover great spots.
               </p>
             </div>
