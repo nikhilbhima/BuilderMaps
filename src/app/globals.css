@@ -4,7 +4,11 @@
 @import "@fontsource/space-grotesk/600.css";
 @import "@fontsource/space-grotesk/700.css";
 
-:root {
+/* Dark theme (default) */
+:root,
+.dark {
+  color-scheme: dark;
+
   /* Backgrounds */
   --bg-dark: #0a0a0b;
   --bg-card: #131316;
@@ -27,14 +31,37 @@
   --border-hover: #3f3f46;
 }
 
-html {
-  color-scheme: dark;
+/* Light theme */
+.light {
+  color-scheme: light;
+
+  /* Backgrounds */
+  --bg-dark: #ffffff;
+  --bg-card: #f8f8f8;
+  --bg-card-hover: #f0f0f0;
+
+  /* Accent Colors - slightly adjusted for light mode */
+  --accent-lime: #7cb518;
+  --accent-lime-dim: rgba(124, 181, 24, 0.15);
+  --accent-orange: #e85d04;
+  --accent-cyan: #0096c7;
+  --accent-purple: #9333ea;
+
+  /* Text */
+  --text-primary: #0a0a0b;
+  --text-secondary: #525252;
+  --text-muted: #a3a3a3;
+
+  /* Borders */
+  --border: #e5e5e5;
+  --border-hover: #d4d4d4;
 }
 
 body {
   background: var(--bg-dark);
   color: var(--text-primary);
   font-family: 'Space Grotesk', -apple-system, BlinkMacSystemFont, sans-serif;
+  transition: background-color 0.2s ease, color 0.2s ease;
 }
 
 /* Custom scrollbar */

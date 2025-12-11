@@ -4,7 +4,12 @@ import { motion, AnimatePresence } from "framer-motion";
 import { createClient } from "@/lib/supabase/client";
 import { useApp } from "@/contexts/AppContext";
 
-const SITE_URL = "https://builder-maps.vercel.app";
+function getSiteUrl(): string {
+  if (typeof window !== "undefined") {
+    return window.location.origin;
+  }
+  return process.env.NEXT_PUBLIC_SITE_URL || "https://builder-maps.vercel.app";
+}
 
 export function LoginModal() {
   const { isLoginModalOpen, closeLoginModal } = useApp();
@@ -14,7 +19,7 @@ export function LoginModal() {
     await supabase.auth.signInWithOAuth({
       provider: "twitter",
       options: {
-        redirectTo: `${SITE_URL}/auth/callback`,
+        redirectTo: `${getSiteUrl()}/auth/callback`,
       },
     });
   };
@@ -23,7 +28,7 @@ export function LoginModal() {
     await supabase.auth.signInWithOAuth({
       provider: "linkedin_oidc",
       options: {
-        redirectTo: `${SITE_URL}/auth/callback`,
+        redirectTo: `${getSiteUrl()}/auth/callback`,
       },
     });
   };

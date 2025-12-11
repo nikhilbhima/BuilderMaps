@@ -1,6 +1,5 @@
 import type { Metadata, Viewport } from "next";
 import { Providers } from "@/components/Providers";
-import { AppProvider } from "@/contexts/AppContext";
 import { LoginModal } from "@/components/LoginModal";
 import "./globals.css";
 
@@ -52,13 +51,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body className="antialiased bg-dark-900 min-h-screen">
+    <html lang="en" className="dark" suppressHydrationWarning>
+      <body className="antialiased min-h-screen bg-[var(--bg-dark)] text-[var(--text-primary)] transition-colors duration-200">
         <Providers>
-          <AppProvider>
-            {children}
-            <LoginModal />
-          </AppProvider>
+          {children}
+          <LoginModal />
         </Providers>
       </body>
     </html>

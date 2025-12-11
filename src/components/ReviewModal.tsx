@@ -4,6 +4,7 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useApp } from "@/contexts/AppContext";
 import { sanitizeReviewText } from "@/utils/sanitize";
+import { useToast } from "@/components/Toast";
 
 const MAX_REVIEW_LENGTH = 500;
 
@@ -16,6 +17,7 @@ interface ReviewModalProps {
 
 export function ReviewModal({ isOpen, onClose, spotName, spotId }: ReviewModalProps) {
   const { user } = useApp();
+  const { showToast } = useToast();
   const [rating, setRating] = useState<number>(0);
   const [hoverRating, setHoverRating] = useState<number>(0);
   const [reviewText, setReviewText] = useState("");
@@ -54,10 +56,11 @@ export function ReviewModal({ isOpen, onClose, spotName, spotId }: ReviewModalPr
       // Reset form and close
       setRating(0);
       setReviewText("");
+      showToast("Review submitted successfully!", "success");
       onClose();
     } catch (error) {
       console.error("Failed to submit review:", error);
-      alert("Failed to submit review. Please try again.");
+      showToast("Failed to submit review. Please try again.", "error");
     } finally {
       setIsSubmitting(false);
     }

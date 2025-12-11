@@ -4,6 +4,7 @@ import { useState, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { SpotType, spotTypeConfig } from "@/data/spots";
 import { cities } from "@/data/cities";
+import { useToast } from "@/components/Toast";
 
 interface NominationModalProps {
   isOpen: boolean;
@@ -94,6 +95,7 @@ function extractCoordsFromGoogleMapsUrl(url: string): [number, number] | null {
 }
 
 export function NominationModal({ isOpen, onClose, defaultCityId }: NominationModalProps) {
+  const { showToast } = useToast();
   const [formData, setFormData] = useState({
     name: "",
     cityId: defaultCityId || "",
@@ -238,9 +240,10 @@ export function NominationModal({ isOpen, onClose, defaultCityId }: NominationMo
       }
 
       setIsSubmitted(true);
+      showToast("Nomination submitted successfully!", "success");
     } catch (error) {
       console.error("Failed to submit nomination:", error);
-      alert("Failed to submit nomination. Please try again.");
+      showToast("Failed to submit nomination. Please try again.", "error");
     } finally {
       setIsSubmitting(false);
     }
@@ -262,9 +265,10 @@ export function NominationModal({ isOpen, onClose, defaultCityId }: NominationMo
       }
 
       setCityRequestSubmitted(true);
+      showToast("City request submitted!", "success");
     } catch (error) {
       console.error("Failed to submit city request:", error);
-      alert("Failed to submit city request. Please try again.");
+      showToast("Failed to submit city request. Please try again.", "error");
     }
   };
 
