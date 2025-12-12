@@ -7,7 +7,6 @@ import { Footer } from "@/components/Footer";
 import { RegionTabs } from "@/components/RegionTabs";
 import { CityCard } from "@/components/CityCard";
 import { NominationModal } from "@/components/NominationModal";
-import { SearchBar } from "@/components/SearchBar";
 import { regions, getCitiesByRegion, Region } from "@/data/cities";
 
 export default function Home() {
@@ -39,15 +38,10 @@ export default function Home() {
                   hang out
                 </span>
               </h1>
-              <p className="text-[var(--text-secondary)] text-lg sm:text-xl max-w-2xl mx-auto mb-6">
+              <p className="text-[var(--text-secondary)] text-lg sm:text-xl max-w-2xl mx-auto">
                 Discover coworking spaces, hacker houses, cafes, and communities
                 where founders and developers gather in any city.
               </p>
-
-              {/* Search Bar */}
-              <div className="flex justify-center">
-                <SearchBar />
-              </div>
             </motion.div>
           </div>
         </section>
