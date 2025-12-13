@@ -1,6 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { NextRequest, NextResponse } from "next/server";
 import { sanitizeReviewText } from "@/utils/sanitize";
+import { validateOrigin, csrfError } from "@/utils/csrf";
 
 // Rate limiting: simple in-memory store
 const requestCounts = new Map<string, { count: number; resetTime: number }>();
@@ -28,6 +29,11 @@ export async function POST(
   request: NextRequest,
   { params }: { params: Promise<{ spotId: string }> }
 ) {
+  // CSRF protection
+  if (!validateOrigin(request)) {
+    return NextResponse.json(csrfError(), { status: 403 });
+  }
+
   const { spotId } = await params;
 
   if (!spotId) {

@@ -87,19 +87,33 @@ export function AppProvider({ children }: { children: ReactNode }) {
     return () => subscription.unsubscribe();
   }, [supabase]);
 
-  // Fetch all spot upvote counts
+  // Fetch all spot upvote counts using aggregated view
   const fetchUpvoteCounts = useCallback(async () => {
     try {
+      // Use the spot_upvote_counts view for efficient aggregation
       const { data, error } = await supabase
-        .from("upvotes")
-        .select("spot_id");
+        .from("spot_upvote_counts")
+        .select("spot_id, upvote_count");
 
       if (!error && data) {
         const counts: Record<string, number> = {};
         data.forEach((row) => {
-          counts[row.spot_id] = (counts[row.spot_id] || 0) + 1;
+          counts[row.spot_id] = row.upvote_count;
         });
         setSpotUpvoteCounts(counts);
+      } else if (error) {
+        // Fallback to manual counting if view doesn't exist yet
+        const { data: fallbackData } = await supabase
+          .from("upvotes")
+          .select("spot_id");
+
+        if (fallbackData) {
+          const counts: Record<string, number> = {};
+          fallbackData.forEach((row) => {
+            counts[row.spot_id] = (counts[row.spot_id] || 0) + 1;
+          });
+          setSpotUpvoteCounts(counts);
+        }
       }
     } catch (error) {
       console.error("Failed to fetch upvote counts:", error);
@@ -132,19 +146,33 @@ export function AppProvider({ children }: { children: ReactNode }) {
     }
   }, [supabaseUser, supabase]);
 
-  // Sync user data to users table when logged in
+  // Sync user data to users table when logged in (only if stale)
   const syncUserToDb = useCallback(async () => {
     if (!supabaseUser || !user) return;
 
     try {
-      await supabase.from("users").upsert({
-        id: user.id,
-        handle: user.handle,
-        display_name: user.displayName || null,
-        provider: user.provider === "x" ? "twitter" : user.provider,
-        avatar_url: user.avatarUrl || null,
-        updated_at: new Date().toISOString(),
-      }, { onConflict: "id" });
+      // Check if user exists and when last updated
+      const { data: existingUser } = await supabase
+        .from("users")
+        .select("updated_at")
+        .eq("id", user.id)
+        .single();
+
+      // Only sync if user doesn't exist or updated_at is older than 24 hours
+      const shouldSync = !existingUser ||
+        !existingUser.updated_at ||
+        (Date.now() - new Date(existingUser.updated_at).getTime() > 24 * 60 * 60 * 1000);
+
+      if (shouldSync) {
+        await supabase.from("users").upsert({
+          id: user.id,
+          handle: user.handle,
+          display_name: user.displayName || null,
+          provider: user.provider === "x" ? "twitter" : user.provider,
+          avatar_url: user.avatarUrl || null,
+          updated_at: new Date().toISOString(),
+        }, { onConflict: "id" });
+      }
     } catch (error) {
       console.error("Failed to sync user:", error);
     }

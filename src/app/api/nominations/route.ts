@@ -7,6 +7,7 @@ import {
   sanitizeHandle,
   validateCoordinates,
 } from "@/utils/sanitize";
+import { validateOrigin, csrfError } from "@/utils/csrf";
 
 // Rate limiting: simple in-memory store
 const requestCounts = new Map<string, { count: number; resetTime: number }>();
@@ -31,6 +32,11 @@ function isRateLimited(ip: string): boolean {
 }
 
 export async function POST(request: NextRequest) {
+  // CSRF protection
+  if (!validateOrigin(request)) {
+    return NextResponse.json(csrfError(), { status: 403 });
+  }
+
   // Get client IP for rate limiting
   const ip =
     request.headers.get("x-forwarded-for")?.split(",")[0] ||
