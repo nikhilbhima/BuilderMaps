@@ -4,7 +4,7 @@ import { Footer } from "@/components/Footer";
 
 export const metadata: Metadata = {
   title: "About - Builder Maps",
-  description: "Learn about Builder Maps - a community-driven platform to discover where founders, developers, and builders hang out in any city.",
+  description: "Learn about Builder Maps - a community-driven platform to discover where founders and builders hang out in any city.",
 };
 
 export default function AboutPage() {
@@ -29,14 +29,14 @@ export default function AboutPage() {
         <div className="space-y-6 text-[var(--text-secondary)] leading-relaxed">
           <p className="text-lg">
             <span className="text-[var(--accent-lime)] font-semibold">Builder Maps</span> is a community-driven platform
-            that helps founders, developers, and builders discover the best spots to work, meet, and
+            that helps founders and builders discover the best spots to work, meet, and
             collaborate in cities around the world.
           </p>
 
           <h2 className="text-2xl font-semibold text-[var(--text-primary)] pt-4">The Problem</h2>
           <p>
             Every city has its hidden gems - the coworking spaces where startup founders gather,
-            the cafes where developers write code late into the night, the hacker houses where
+            the cafes where builders write code late into the night, the hacker houses where
             side projects turn into companies, and the event venues where the community comes together.
           </p>
           <p>

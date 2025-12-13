@@ -40,7 +40,7 @@ export default function Home() {
               </h1>
               <p className="text-[var(--text-secondary)] text-lg sm:text-xl max-w-2xl mx-auto mb-6">
                 Discover coworking spaces, hacker houses, cafes, and communities
-                where founders and developers gather in any city.
+                where founders and builders gather in any city.
               </p>
 
             </motion.div>

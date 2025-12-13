@@ -22,14 +22,14 @@ export const metadata: Metadata = {
   },
   openGraph: {
     title: "Builder Maps - Where builders hang out",
-    description: "Discover where founders, developers, and startup people hang out in any city.",
+    description: "Discover where founders and builders hang out in any city.",
     type: "website",
     siteName: "Builder Maps",
   },
   twitter: {
     card: "summary_large_image",
     title: "Builder Maps - Where builders hang out",
-    description: "Discover where founders, developers, and startup people hang out in any city.",
+    description: "Discover where founders and builders hang out in any city.",
     creator: "@nikhilbhima",
   },
   appleWebApp: {
