@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { logAuditAction } from "@/lib/audit";
 
@@ -30,6 +30,7 @@ export default function AdminSpotsPage() {
   const [spots, setSpots] = useState<Spot[]>([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<"all" | "approved" | "pending">("all");
+  const [cityFilter, setCityFilter] = useState<string>("all");
   const [searchQuery, setSearchQuery] = useState("");
   const [adminUser, setAdminUser] = useState<AdminUser | null>(null);
   const [selectedSpot, setSelectedSpot] = useState<Spot | null>(null);
@@ -37,6 +38,12 @@ export default function AdminSpotsPage() {
   const [processing, setProcessing] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
+
+  // Get unique cities from spots for the dropdown
+  const availableCities = useMemo(() => {
+    const citySet = new Set(spots.map(s => s.city_id));
+    return Array.from(citySet).sort();
+  }, [spots]);
 
   useEffect(() => {
     fetchAdminAndSpots();
@@ -200,9 +207,10 @@ export default function AdminSpotsPage() {
     const matchesFilter = filter === "all" ||
       (filter === "approved" && spot.approved) ||
       (filter === "pending" && !spot.approved);
+    const matchesCity = cityFilter === "all" || spot.city_id === cityFilter;
     const matchesSearch = spot.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       spot.city_id.toLowerCase().includes(searchQuery.toLowerCase());
-    return matchesFilter && matchesSearch;
+    return matchesFilter && matchesCity && matchesSearch;
   });
 
   if (loading) {
@@ -235,14 +243,31 @@ export default function AdminSpotsPage() {
       )}
 
       {/* Filters */}
-      <div className="flex flex-col sm:flex-row gap-4 mb-6">
-        <input
-          type="text"
-          placeholder="Search spots..."
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          className="flex-1 px-4 py-2 bg-[var(--bg-card)] border border-[var(--border)] rounded-lg text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:outline-none focus:border-[var(--brand-lime)]/50"
-        />
+      <div className="flex flex-col gap-4 mb-6">
+        <div className="flex flex-col sm:flex-row gap-4">
+          <input
+            type="text"
+            placeholder="Search spots..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="flex-1 px-4 py-2 bg-[var(--bg-card)] border border-[var(--border)] rounded-lg text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:outline-none focus:border-[var(--brand-lime)]/50"
+          />
+          <select
+            value={cityFilter}
+            onChange={(e) => setCityFilter(e.target.value)}
+            className="px-4 py-2 bg-[var(--bg-card)] border border-[var(--border)] rounded-lg text-[var(--text-primary)] focus:outline-none focus:border-[var(--brand-lime)]/50 min-w-[180px]"
+          >
+            <option value="all">All Cities ({spots.length})</option>
+            {availableCities.map((city) => {
+              const count = spots.filter(s => s.city_id === city).length;
+              return (
+                <option key={city} value={city}>
+                  {city} ({count})
+                </option>
+              );
+            })}
+          </select>
+        </div>
         <div className="flex gap-2">
           {(["all", "approved", "pending"] as const).map((f) => (
             <button

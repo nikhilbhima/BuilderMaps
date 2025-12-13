@@ -82,11 +82,27 @@ const ReviewCard = ({ review }: { review: Review }) => {
   );
 };
 
+const REPORT_TYPES = [
+  { value: "wrong_address", label: "Wrong Address" },
+  { value: "permanently_closed", label: "Permanently Closed" },
+  { value: "temporarily_closed", label: "Temporarily Closed" },
+  { value: "wrong_info", label: "Wrong Information" },
+  { value: "fake_spam", label: "Fake/Spam" },
+  { value: "duplicate", label: "Duplicate" },
+  { value: "other", label: "Other" },
+];
+
 export function SpotDetailModal({ spot, isOpen, onClose }: SpotDetailModalProps) {
   const { user, openLoginModal } = useApp();
   const [newReview, setNewReview] = useState({ rating: 0, text: "" });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitSuccess, setSubmitSuccess] = useState(false);
+  const [showReportModal, setShowReportModal] = useState(false);
+  const [reportType, setReportType] = useState("");
+  const [reportDetails, setReportDetails] = useState("");
+  const [isReporting, setIsReporting] = useState(false);
+  const [reportSuccess, setReportSuccess] = useState(false);
+  const [reportError, setReportError] = useState<string | null>(null);
 
   if (!spot) return null;
 
@@ -109,6 +125,57 @@ export function SpotDetailModal({ spot, isOpen, onClose }: SpotDetailModalProps)
 
     // Reset success message after a delay
     setTimeout(() => setSubmitSuccess(false), 3000);
+  };
+
+  const handleReport = () => {
+    if (!user) {
+      openLoginModal();
+      return;
+    }
+    setShowReportModal(true);
+    setReportError(null);
+    setReportSuccess(false);
+  };
+
+  const handleSubmitReport = async () => {
+    if (!reportType) {
+      setReportError("Please select a report type");
+      return;
+    }
+
+    setIsReporting(true);
+    setReportError(null);
+
+    try {
+      const response = await fetch(`/api/spots/${spot.id}/report`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          reportType,
+          details: reportDetails.trim() || null,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        setReportError(data.error || "Failed to submit report");
+        setIsReporting(false);
+        return;
+      }
+
+      setReportSuccess(true);
+      setTimeout(() => {
+        setShowReportModal(false);
+        setReportType("");
+        setReportDetails("");
+        setReportSuccess(false);
+      }, 2000);
+    } catch {
+      setReportError("Failed to submit report");
+    } finally {
+      setIsReporting(false);
+    }
   };
 
   return (
@@ -141,15 +208,27 @@ export function SpotDetailModal({ spot, isOpen, onClose }: SpotDetailModalProps)
                     <span className="text-sm text-[#71717a] capitalize">{primaryType.replace("-", " ")}</span>
                   </div>
                 </div>
-                <button
-                  onClick={onClose}
-                  className="p-2 text-[#71717a] hover:text-[#fafafa] hover:bg-[#1a1a1f] rounded-lg transition-colors"
-                  aria-label="Close spot details"
-                >
-                  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                  </svg>
-                </button>
+                <div className="flex items-center gap-1">
+                  <button
+                    onClick={handleReport}
+                    className="p-2 text-[#71717a] hover:text-red-400 hover:bg-[#1a1a1f] rounded-lg transition-colors"
+                    aria-label="Report spot"
+                    title="Report this spot"
+                  >
+                    <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                    </svg>
+                  </button>
+                  <button
+                    onClick={onClose}
+                    className="p-2 text-[#71717a] hover:text-[#fafafa] hover:bg-[#1a1a1f] rounded-lg transition-colors"
+                    aria-label="Close spot details"
+                  >
+                    <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </button>
+                </div>
               </div>
 
               <p className="text-[#a1a1aa] mt-3">{spot.description}</p>
@@ -290,6 +369,114 @@ export function SpotDetailModal({ spot, isOpen, onClose }: SpotDetailModalProps)
               )}
             </div>
           </motion.div>
+
+          {/* Report Modal */}
+          {showReportModal && (
+            <>
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                onClick={() => setShowReportModal(false)}
+                className="fixed inset-0 bg-black/60 z-[60]"
+              />
+              <motion.div
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.95 }}
+                className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[90%] max-w-md bg-[#131316] border border-[#272727] rounded-xl z-[60] p-6"
+              >
+                {reportSuccess ? (
+                  <div className="text-center py-4">
+                    <div className="w-12 h-12 bg-green-500/20 rounded-full flex items-center justify-center mx-auto mb-3">
+                      <svg className="w-6 h-6 text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                      </svg>
+                    </div>
+                    <p className="text-[#fafafa] font-medium">Report Submitted</p>
+                    <p className="text-sm text-[#71717a] mt-1">Thanks for helping keep BuilderMaps accurate!</p>
+                  </div>
+                ) : (
+                  <>
+                    <h3 className="text-lg font-bold text-[#fafafa] mb-1">Report this spot</h3>
+                    <p className="text-sm text-[#71717a] mb-4">Help us keep BuilderMaps accurate</p>
+
+                    {reportError && (
+                      <div className="mb-4 p-3 bg-red-500/15 border border-red-500/30 rounded-lg text-red-400 text-sm">
+                        {reportError}
+                      </div>
+                    )}
+
+                    <div className="space-y-4">
+                      <div>
+                        <label className="block text-sm font-medium text-[#fafafa] mb-2">Issue Type</label>
+                        <div className="grid grid-cols-2 gap-2">
+                          {REPORT_TYPES.map((type) => (
+                            <button
+                              key={type.value}
+                              onClick={() => setReportType(type.value)}
+                              className={`px-3 py-2 text-sm rounded-lg border transition-colors text-left ${
+                                reportType === type.value
+                                  ? "bg-red-500/15 border-red-500/50 text-red-400"
+                                  : "bg-[#1a1a1f] border-[#272727] text-[#a1a1aa] hover:border-[#3f3f46]"
+                              }`}
+                            >
+                              {type.label}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-[#fafafa] mb-2">
+                          Additional Details <span className="text-[#71717a] font-normal">(optional)</span>
+                        </label>
+                        <textarea
+                          value={reportDetails}
+                          onChange={(e) => setReportDetails(e.target.value)}
+                          placeholder="Tell us more about the issue..."
+                          rows={3}
+                          maxLength={500}
+                          className="w-full p-3 bg-[#1a1a1f] border border-[#272727] rounded-lg text-[#fafafa] placeholder-[#71717a] text-sm resize-none focus:outline-none focus:border-[#3f3f46]"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="flex gap-3 mt-6">
+                      <button
+                        onClick={handleSubmitReport}
+                        disabled={!reportType || isReporting}
+                        className="flex-1 px-4 py-2 bg-red-500/15 hover:bg-red-500/25 disabled:bg-[#272727] text-red-400 disabled:text-[#52525b] rounded-lg font-semibold text-sm transition-colors flex items-center justify-center gap-2"
+                      >
+                        {isReporting ? (
+                          <>
+                            <svg className="w-4 h-4 animate-spin" viewBox="0 0 24 24" fill="none">
+                              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                            </svg>
+                            Submitting...
+                          </>
+                        ) : (
+                          "Submit Report"
+                        )}
+                      </button>
+                      <button
+                        onClick={() => {
+                          setShowReportModal(false);
+                          setReportType("");
+                          setReportDetails("");
+                          setReportError(null);
+                        }}
+                        className="px-4 py-2 bg-[#1a1a1f] text-[#a1a1aa] rounded-lg font-semibold text-sm transition-colors hover:text-[#fafafa]"
+                      >
+                        Cancel
+                      </button>
+                    </div>
+                  </>
+                )}
+              </motion.div>
+            </>
+          )}
         </>
       )}
     </AnimatePresence>
