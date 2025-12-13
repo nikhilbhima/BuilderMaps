@@ -146,33 +146,36 @@ export function AppProvider({ children }: { children: ReactNode }) {
     }
   }, [supabaseUser, supabase]);
 
-  // Sync user data to users table when logged in (only if stale)
-  const syncUserToDb = useCallback(async () => {
+  // Sync user data to users table when logged in
+  // forceSync=true bypasses the 24-hour stale check (used before upvoting)
+  const syncUserToDb = useCallback(async (forceSync = false) => {
     if (!supabaseUser || !user) return;
 
     try {
-      // Check if user exists and when last updated
-      const { data: existingUser } = await supabase
-        .from("users")
-        .select("updated_at")
-        .eq("id", user.id)
-        .single();
+      // Check if user exists and when last updated (skip check if forceSync)
+      if (!forceSync) {
+        const { data: existingUser } = await supabase
+          .from("users")
+          .select("updated_at")
+          .eq("id", user.id)
+          .single();
 
-      // Only sync if user doesn't exist or updated_at is older than 24 hours
-      const shouldSync = !existingUser ||
-        !existingUser.updated_at ||
-        (Date.now() - new Date(existingUser.updated_at).getTime() > 24 * 60 * 60 * 1000);
+        // Only sync if user doesn't exist or updated_at is older than 24 hours
+        const shouldSync = !existingUser ||
+          !existingUser.updated_at ||
+          (Date.now() - new Date(existingUser.updated_at).getTime() > 24 * 60 * 60 * 1000);
 
-      if (shouldSync) {
-        await supabase.from("users").upsert({
-          id: user.id,
-          handle: user.handle,
-          display_name: user.displayName || null,
-          provider: user.provider === "x" ? "twitter" : user.provider,
-          avatar_url: user.avatarUrl || null,
-          updated_at: new Date().toISOString(),
-        }, { onConflict: "id" });
+        if (!shouldSync) return;
       }
+
+      await supabase.from("users").upsert({
+        id: user.id,
+        handle: user.handle,
+        display_name: user.displayName || null,
+        provider: user.provider === "x" ? "twitter" : user.provider,
+        avatar_url: user.avatarUrl || null,
+        updated_at: new Date().toISOString(),
+      }, { onConflict: "id" });
     } catch (error) {
       console.error("Failed to sync user:", error);
     }
@@ -248,6 +251,9 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
       try {
         if (willBeUpvoted) {
+          // Ensure user is synced to DB before upvoting (so upvoters list shows them)
+          await syncUserToDb(true);
+
           // Add upvote
           const { error } = await supabase.from("upvotes").insert({
             user_id: user.id,
@@ -294,7 +300,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
         return !willBeUpvoted;
       }
     },
-    [user, upvotedSpots, supabase]
+    [user, upvotedSpots, supabase, syncUserToDb]
   );
 
   return (

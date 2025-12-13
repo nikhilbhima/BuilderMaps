@@ -18,10 +18,14 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-    // Get upvoters for this spot, joined with users table
+    // Get upvoters with user details in a single query using left join
     const { data: upvotes, error } = await supabase
       .from("upvotes")
-      .select("user_id, created_at")
+      .select(`
+        user_id,
+        created_at,
+        user:users(id, handle, display_name, provider, avatar_url)
+      `)
       .eq("spot_id", spotId)
       .order("created_at", { ascending: false });
 
@@ -34,27 +38,21 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ upvoters: [] });
     }
 
-    // Get user details for each upvoter
-    const userIds = upvotes.map(u => u.user_id);
-    const { data: users, error: usersError } = await supabase
-      .from("users")
-      .select("id, handle, display_name, provider, avatar_url")
-      .in("id", userIds);
-
-    if (usersError) {
-      console.error("Error fetching users:", usersError);
-    }
-
-    // Map users by ID for quick lookup
-    const userMap = new Map(users?.map(u => [u.id, u]) || []);
-
-    // Build upvoters list
+    // Build upvoters list - handle both joined data and missing user records
     const upvoters = upvotes.map(upvote => {
-      const userInfo = userMap.get(upvote.user_id);
+      // user can be null, an object, or an array with one item depending on Supabase version
+      const userInfo = Array.isArray(upvote.user) ? upvote.user[0] : upvote.user;
+
+      // Normalize provider: "twitter" -> "x"
+      let provider: "x" | "linkedin" = "x";
+      if (userInfo?.provider === "linkedin" || userInfo?.provider === "linkedin_oidc") {
+        provider = "linkedin";
+      }
+
       return {
         handle: userInfo?.handle || "user",
         displayName: userInfo?.display_name || undefined,
-        provider: (userInfo?.provider as "x" | "linkedin") || "x",
+        provider,
         avatarUrl: userInfo?.avatar_url || undefined,
       };
     });
