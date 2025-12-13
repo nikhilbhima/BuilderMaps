@@ -22,8 +22,9 @@ export default async function AdminLayout({
   return (
     <div className="min-h-screen bg-[var(--bg-dark)] flex">
       <AdminSidebar adminUser={adminUser} />
-      <main className="flex-1 ml-64">
-        <div className="p-8">{children}</div>
+      <main className="flex-1 lg:ml-64">
+        {/* Add top padding on mobile for the fixed header */}
+        <div className="p-4 pt-18 sm:p-6 lg:p-8 lg:pt-8">{children}</div>
       </main>
     </div>
   );
