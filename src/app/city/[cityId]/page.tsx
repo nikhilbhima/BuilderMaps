@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useParams } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
@@ -12,8 +12,51 @@ import { EmptyState } from "@/components/EmptyState";
 import { NominationModal } from "@/components/NominationModal";
 import { InlineReviewForm } from "@/components/InlineReviewForm";
 import { cities } from "@/data/cities";
-import { getSpotsByCity, Spot, SpotType, spotTypeConfig } from "@/data/spots";
+import { SpotType, spotTypeConfig, Spot, Review } from "@/data/spots";
 import { useApp } from "@/contexts/AppContext";
+import { createClient } from "@/lib/supabase/client";
+
+// Database spot type (snake_case from Supabase)
+interface DbSpot {
+  id: string;
+  name: string;
+  city_id: string;
+  types: string[];
+  description: string;
+  coordinates: number[];
+  vibes: string[];
+  google_maps_url: string | null;
+  luma_url: string | null;
+  website_url: string | null;
+  twitter_url: string | null;
+  instagram_url: string | null;
+  linkedin_url: string | null;
+  approved: boolean;
+  created_at: string;
+}
+
+// Transform database spot to app spot format
+function transformSpot(dbSpot: DbSpot, reviews: Review[] = []): Spot {
+  return {
+    id: dbSpot.id,
+    name: dbSpot.name,
+    cityId: dbSpot.city_id,
+    types: dbSpot.types as SpotType[],
+    description: dbSpot.description,
+    coordinates: dbSpot.coordinates as [number, number],
+    vibes: dbSpot.vibes as Spot["vibes"],
+    upvotes: 0,
+    reviews,
+    googleMapsUrl: dbSpot.google_maps_url || undefined,
+    lumaUrl: dbSpot.luma_url || undefined,
+    websiteUrl: dbSpot.website_url || undefined,
+    twitterUrl: dbSpot.twitter_url || undefined,
+    instagramUrl: dbSpot.instagram_url || undefined,
+    linkedinUrl: dbSpot.linkedin_url || undefined,
+    addedBy: "community",
+    approved: dbSpot.approved,
+  };
+}
 
 // Inline detail panel component
 function SpotDetailPanel({ spot, onClose }: { spot: Spot; onClose: () => void }) {
@@ -32,7 +75,7 @@ function SpotDetailPanel({ spot, onClose }: { spot: Spot; onClose: () => void })
         <div className="flex items-start justify-between gap-3">
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2 mb-1">
-              <span className="text-xl">{typeConfig.emoji}</span>
+              <span className="text-xl">{typeConfig?.emoji || "📍"}</span>
               <h2 className="text-lg sm:text-xl font-semibold text-[var(--text-primary)] truncate">
                 {spot.name}
               </h2>
@@ -252,16 +295,76 @@ export default function CityPage() {
   const { spotUpvoteCounts } = useApp();
 
   const city = cities.find((c) => c.id === cityId);
-  const allSpots = getSpotsByCity(cityId);
 
+  const [spots, setSpots] = useState<Spot[]>([]);
+  const [loading, setLoading] = useState(true);
   const [activeFilter, setActiveFilter] = useState<SpotType | "all">("all");
   const [selectedSpot, setSelectedSpot] = useState<Spot | null>(null);
   const [isNominationOpen, setIsNominationOpen] = useState(false);
 
+  // Fetch spots from Supabase
+  useEffect(() => {
+    async function fetchSpots() {
+      const supabase = createClient();
+
+      const { data: spotsData, error } = await supabase
+        .from("spots")
+        .select("*")
+        .eq("city_id", cityId)
+        .eq("approved", true)
+        .order("created_at", { ascending: false });
+
+      if (error) {
+        console.error("Failed to fetch spots:", error);
+        setLoading(false);
+        return;
+      }
+
+      // Fetch reviews for all spots
+      const spotIds = spotsData?.map(s => s.id) || [];
+      const reviewsMap: Record<string, Review[]> = {};
+
+      if (spotIds.length > 0) {
+        const { data: reviewsData } = await supabase
+          .from("reviews")
+          .select("*")
+          .in("spot_id", spotIds)
+          .order("created_at", { ascending: false });
+
+        if (reviewsData) {
+          reviewsData.forEach((review) => {
+            if (!reviewsMap[review.spot_id]) {
+              reviewsMap[review.spot_id] = [];
+            }
+            reviewsMap[review.spot_id].push({
+              id: review.id,
+              authorHandle: review.author_handle,
+              authorName: review.author_name,
+              provider: review.provider,
+              rating: review.rating,
+              text: review.text,
+              createdAt: review.created_at,
+            });
+          });
+        }
+      }
+
+      // Transform and set spots
+      const transformedSpots = (spotsData || []).map(dbSpot =>
+        transformSpot(dbSpot, reviewsMap[dbSpot.id] || [])
+      );
+
+      setSpots(transformedSpots);
+      setLoading(false);
+    }
+
+    fetchSpots();
+  }, [cityId]);
+
   const filteredSpots = useMemo(() => {
-    if (activeFilter === "all") return allSpots;
-    return allSpots.filter((spot) => spot.types.includes(activeFilter));
-  }, [allSpots, activeFilter]);
+    if (activeFilter === "all") return spots;
+    return spots.filter((spot) => spot.types.includes(activeFilter));
+  }, [spots, activeFilter]);
 
   // Sort by upvotes (using real counts from database)
   const sortedSpots = useMemo(() => {
@@ -316,8 +419,10 @@ export default function CityPage() {
                   {city.name}
                 </h1>
                 <p className="text-sm sm:text-base text-[var(--text-secondary)]">
-                  {allSpots.length > 0
-                    ? `${allSpots.length} spots where builders hang out`
+                  {loading
+                    ? "Loading spots..."
+                    : spots.length > 0
+                    ? `${spots.length} spots where builders hang out`
                     : "No spots yet — be the first to add one"}
                 </p>
               </div>
@@ -335,7 +440,13 @@ export default function CityPage() {
           </div>
         </section>
 
-        {allSpots.length === 0 ? (
+        {loading ? (
+          <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <div className="flex items-center justify-center h-64">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[var(--accent-lime)]" />
+            </div>
+          </section>
+        ) : spots.length === 0 ? (
           <EmptyState cityName={city.name} onNominate={() => setIsNominationOpen(true)} />
         ) : (
           <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-8">

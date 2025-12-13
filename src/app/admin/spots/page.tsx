@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { createClient } from "@/lib/supabase/client";
+import { logAuditAction } from "@/lib/audit";
 
 interface Spot {
   id: string;
@@ -35,6 +36,7 @@ export default function AdminSpotsPage() {
   const [editForm, setEditForm] = useState<Partial<Spot>>({});
   const [processing, setProcessing] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
 
   useEffect(() => {
     fetchAdminAndSpots();
@@ -85,6 +87,17 @@ export default function AdminSpotsPage() {
       setError("Failed to update approval status");
       return;
     }
+
+    // Log audit action
+    const spot = spots.find(s => s.id === spotId);
+    await logAuditAction({
+      action: currentStatus ? "spot_unapproved" : "spot_approved",
+      target_type: "spot",
+      target_id: spotId,
+      old_value: { approved: currentStatus, name: spot?.name },
+      new_value: { approved: !currentStatus },
+    });
+
     setSpots(spots.map(s => s.id === spotId ? { ...s, approved: !currentStatus } : s));
   }
 
@@ -114,6 +127,25 @@ export default function AdminSpotsPage() {
       return;
     }
 
+    // Log audit action
+    await logAuditAction({
+      action: "spot_updated",
+      target_type: "spot",
+      target_id: selectedSpot.id,
+      old_value: {
+        name: selectedSpot.name,
+        description: selectedSpot.description,
+        types: selectedSpot.types,
+        vibes: selectedSpot.vibes,
+      },
+      new_value: {
+        name: editForm.name,
+        description: editForm.description,
+        types: editForm.types,
+        vibes: editForm.vibes,
+      },
+    });
+
     setSpots(spots.map(s => s.id === selectedSpot.id ? { ...s, ...editForm } : s));
     setSelectedSpot(null);
     setEditForm({});
@@ -132,6 +164,36 @@ export default function AdminSpotsPage() {
       twitter_url: spot.twitter_url,
       instagram_url: spot.instagram_url,
     });
+  }
+
+  async function handleDeleteSpot(spotId: string) {
+    setProcessing(true);
+    setError(null);
+
+    const spot = spots.find(s => s.id === spotId);
+    const supabase = createClient();
+    const { error } = await supabase
+      .from("spots")
+      .delete()
+      .eq("id", spotId);
+
+    if (error) {
+      setError("Failed to delete spot");
+      setProcessing(false);
+      return;
+    }
+
+    // Log audit action
+    await logAuditAction({
+      action: "spot_deleted",
+      target_type: "spot",
+      target_id: spotId,
+      old_value: spot ? { name: spot.name, city_id: spot.city_id } : undefined,
+    });
+
+    setSpots(spots.filter(s => s.id !== spotId));
+    setDeleteConfirm(null);
+    setProcessing(false);
   }
 
   const filteredSpots = spots.filter(spot => {
@@ -266,6 +328,14 @@ export default function AdminSpotsPage() {
                       >
                         Edit
                       </button>
+                      {adminUser?.role === "super_admin" && (
+                        <button
+                          onClick={() => setDeleteConfirm(spot.id)}
+                          className="px-3 py-1 text-xs font-medium bg-red-500/15 text-red-400 rounded hover:bg-red-500/25 transition-colors"
+                        >
+                          Delete
+                        </button>
+                      )}
                     </div>
                   </td>
                 </tr>
@@ -376,6 +446,38 @@ export default function AdminSpotsPage() {
               </button>
               <button
                 onClick={() => { setSelectedSpot(null); setEditForm({}); }}
+                className="px-4 py-2 bg-[var(--bg-dark)] text-[var(--text-secondary)] rounded-lg font-semibold transition-colors hover:text-[var(--text-primary)]"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Delete Confirmation Modal */}
+      {deleteConfirm && (
+        <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4">
+          <div className="bg-[var(--bg-card)] border border-[var(--border)] rounded-xl max-w-md w-full p-6">
+            <h2 className="text-xl font-bold text-[var(--text-primary)] mb-2">
+              Delete Spot
+            </h2>
+            <p className="text-[var(--text-secondary)] mb-2">
+              Are you sure you want to delete this spot?
+            </p>
+            <p className="text-sm text-red-400 mb-6 p-3 bg-red-500/10 border border-red-500/20 rounded-lg">
+              This action cannot be undone. All reviews and upvotes associated with this spot will also be deleted.
+            </p>
+            <div className="flex gap-3">
+              <button
+                onClick={() => handleDeleteSpot(deleteConfirm)}
+                disabled={processing}
+                className="flex-1 px-4 py-2 bg-red-500/15 hover:bg-red-500/25 text-red-400 rounded-lg font-semibold transition-colors disabled:opacity-50"
+              >
+                {processing ? "Deleting..." : "Delete Spot"}
+              </button>
+              <button
+                onClick={() => setDeleteConfirm(null)}
                 className="px-4 py-2 bg-[var(--bg-dark)] text-[var(--text-secondary)] rounded-lg font-semibold transition-colors hover:text-[var(--text-primary)]"
               >
                 Cancel
