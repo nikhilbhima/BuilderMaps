@@ -7,7 +7,6 @@ import { Footer } from "@/components/Footer";
 import { RegionTabs } from "@/components/RegionTabs";
 import { CityCard } from "@/components/CityCard";
 import { NominationModal } from "@/components/NominationModal";
-import { SearchBar } from "@/components/SearchBar";
 import { regions, getCitiesByRegion, Region } from "@/data/cities";
 
 export default function Home() {
@@ -44,10 +43,6 @@ export default function Home() {
                 where founders and developers gather in any city.
               </p>
 
-              {/* Search Bar */}
-              <div className="flex justify-center">
-                <SearchBar />
-              </div>
             </motion.div>
           </div>
         </section>
