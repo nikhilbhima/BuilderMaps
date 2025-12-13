@@ -115,16 +115,39 @@ export function SpotDetailModal({ spot, isOpen, onClose }: SpotDetailModalProps)
       return;
     }
 
-    setIsSubmitting(true);
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-    // In production, submit to API
-    setIsSubmitting(false);
-    setSubmitSuccess(true);
-    setNewReview({ rating: 0, text: "" });
+    if (!newReview.rating || !newReview.text.trim()) {
+      return;
+    }
 
-    // Reset success message after a delay
-    setTimeout(() => setSubmitSuccess(false), 3000);
+    setIsSubmitting(true);
+
+    try {
+      const response = await fetch(`/api/spots/${spot.id}/reviews`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          rating: newReview.rating,
+          text: newReview.text.trim(),
+        }),
+      });
+
+      if (!response.ok) {
+        const data = await response.json();
+        console.error("Review submission failed:", data.error);
+        setIsSubmitting(false);
+        return;
+      }
+
+      setSubmitSuccess(true);
+      setNewReview({ rating: 0, text: "" });
+
+      // Reset success message after a delay
+      setTimeout(() => setSubmitSuccess(false), 3000);
+    } catch (error) {
+      console.error("Failed to submit review:", error);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleReport = () => {
