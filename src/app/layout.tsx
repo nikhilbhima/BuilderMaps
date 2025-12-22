@@ -45,6 +45,41 @@ export const viewport: Viewport = {
   initialScale: 1,
 };
 
+// JSON-LD Structured Data
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebSite",
+      "@id": "https://builder-maps.vercel.app/#website",
+      url: "https://builder-maps.vercel.app",
+      name: "Builder Maps",
+      description: "Discover coworking spaces, hacker houses, cafes, and communities where the builder community gathers in any city.",
+      potentialAction: {
+        "@type": "SearchAction",
+        target: {
+          "@type": "EntryPoint",
+          urlTemplate: "https://builder-maps.vercel.app/city/{search_term_string}",
+        },
+        "query-input": "required name=search_term_string",
+      },
+    },
+    {
+      "@type": "Organization",
+      "@id": "https://builder-maps.vercel.app/#organization",
+      name: "Builder Maps",
+      url: "https://builder-maps.vercel.app",
+      logo: {
+        "@type": "ImageObject",
+        url: "https://builder-maps.vercel.app/icon-192.png",
+      },
+      sameAs: [
+        "https://twitter.com/nikhilbhima",
+      ],
+    },
+  ],
+};
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -52,6 +87,12 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="dark" suppressHydrationWarning>
+      <head>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
+      </head>
       <body className="antialiased min-h-screen bg-[var(--bg-dark)] text-[var(--text-primary)] transition-colors duration-200">
         <Providers>
           {children}

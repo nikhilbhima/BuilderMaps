@@ -1,0 +1,11 @@
+# BuilderMaps robots.txt
+User-agent: *
+Allow: /
+
+# Sitemap
+Sitemap: https://builder-maps.vercel.app/sitemap.xml
+
+# Disallow admin and auth routes
+Disallow: /admin
+Disallow: /auth
+Disallow: /api
