@@ -4,6 +4,8 @@ import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Spot, spotTypeConfig } from "@/data/spots";
 import { useApp } from "@/contexts/AppContext";
+import { SocialLinkIcon } from "@/components/SocialLinkIcon";
+import { SOCIAL_PLATFORMS } from "@/utils/socialLinks";
 
 interface Upvoter {
   handle: string;
@@ -348,6 +350,24 @@ export function SpotCard({ spot, isSelected, onClick, index = 0 }: SpotCardProps
                 </svg>
               </a>
             )}
+            {/* Custom Links */}
+            {spot.customLinks && spot.customLinks.slice(0, 3).map((link) => {
+              const platform = SOCIAL_PLATFORMS[link.platformId] || SOCIAL_PLATFORMS.generic;
+              return (
+                <a
+                  key={link.id}
+                  href={link.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={(e) => e.stopPropagation()}
+                  className="p-2 text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-card-hover)] rounded-lg transition-colors"
+                  aria-label={`Visit ${platform.name}`}
+                  title={platform.name}
+                >
+                  <SocialLinkIcon platformId={link.platformId} size={16} />
+                </a>
+              );
+            })}
           </div>
         </div>
       </motion.div>

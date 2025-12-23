@@ -45,6 +45,14 @@ export interface Review {
   createdAt: string; // ISO date string
 }
 
+// Custom social link (for additional platforms beyond LinkedIn, X, Instagram)
+export interface CustomLink {
+  id: string;
+  url: string;
+  platformId: string; // Detected platform ID (e.g., 'substack', 'youtube', 'generic')
+  displayName?: string; // Optional custom display name
+}
+
 export interface Spot {
   id: string;
   name: string;
@@ -62,6 +70,7 @@ export interface Spot {
   twitterUrl?: string;
   instagramUrl?: string;
   linkedinUrl?: string;
+  customLinks?: CustomLink[]; // Additional social links (Substack, YouTube, etc.)
   addedBy: string; // Twitter handle
   approved: boolean;
 }

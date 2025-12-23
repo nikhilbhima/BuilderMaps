@@ -62,6 +62,7 @@ CREATE TABLE IF NOT EXISTS spots (
   twitter_url TEXT,
   instagram_url TEXT,
   linkedin_url TEXT,
+  custom_links JSONB DEFAULT '[]',
   added_by TEXT NOT NULL,
   approved BOOLEAN DEFAULT false,
   created_at TIMESTAMPTZ DEFAULT NOW(),

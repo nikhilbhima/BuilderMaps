@@ -2,9 +2,11 @@
 
 import { useState, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { SpotType, spotTypeConfig } from "@/data/spots";
+import { SpotType, spotTypeConfig, CustomLink } from "@/data/spots";
 import { cities } from "@/data/cities";
 import { useToast } from "@/components/Toast";
+import { parseCustomLink, generateLinkId, SOCIAL_PLATFORMS } from "@/utils/socialLinks";
+import { SocialLinkIcon } from "@/components/SocialLinkIcon";
 
 interface NominationModalProps {
   isOpen: boolean;
@@ -108,7 +110,11 @@ export function NominationModal({ isOpen, onClose, defaultCityId }: NominationMo
     twitterHandle: "",
     instagramHandle: "",
     linkedinUrl: "",
+    lumaUrl: "",
+    customLinks: [] as CustomLink[],
   });
+  const [newCustomLinkUrl, setNewCustomLinkUrl] = useState("");
+  const [customLinkError, setCustomLinkError] = useState<string | null>(null);
   const [step, setStep] = useState(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
@@ -231,6 +237,8 @@ export function NominationModal({ isOpen, onClose, defaultCityId }: NominationMo
           twitterHandle: formData.twitterHandle || null,
           instagramHandle: formData.instagramHandle || null,
           linkedinUrl: formData.linkedinUrl || null,
+          lumaUrl: formData.lumaUrl || null,
+          customLinks: formData.customLinks.length > 0 ? formData.customLinks : null,
         }),
       });
 
@@ -288,6 +296,8 @@ export function NominationModal({ isOpen, onClose, defaultCityId }: NominationMo
         twitterHandle: "",
         instagramHandle: "",
         linkedinUrl: "",
+        lumaUrl: "",
+        customLinks: [],
       });
       setStep(1);
       setIsSubmitted(false);
@@ -296,7 +306,61 @@ export function NominationModal({ isOpen, onClose, defaultCityId }: NominationMo
       setRequestedCity("");
       setCityRequestSubmitted(false);
       setUrlError(null);
+      setNewCustomLinkUrl("");
+      setCustomLinkError(null);
     }, 300);
+  };
+
+  // Handle adding a custom link
+  const handleAddCustomLink = () => {
+    setCustomLinkError(null);
+
+    if (!newCustomLinkUrl.trim()) {
+      setCustomLinkError("Please enter a URL");
+      return;
+    }
+
+    // Check if we've reached the limit
+    if (formData.customLinks.length >= 5) {
+      setCustomLinkError("Maximum 5 custom links allowed");
+      return;
+    }
+
+    const parsed = parseCustomLink(newCustomLinkUrl);
+    if (!parsed) {
+      setCustomLinkError("Please enter a valid URL");
+      return;
+    }
+
+    // Check for duplicate URLs
+    const isDuplicate = formData.customLinks.some(
+      (link) => link.url.toLowerCase() === parsed.url.toLowerCase()
+    );
+    if (isDuplicate) {
+      setCustomLinkError("This link has already been added");
+      return;
+    }
+
+    const newLink: CustomLink = {
+      id: generateLinkId(),
+      url: parsed.url,
+      platformId: parsed.platform.id,
+      displayName: parsed.displayName,
+    };
+
+    setFormData((prev) => ({
+      ...prev,
+      customLinks: [...prev.customLinks, newLink],
+    }));
+    setNewCustomLinkUrl("");
+  };
+
+  // Handle removing a custom link
+  const handleRemoveCustomLink = (linkId: string) => {
+    setFormData((prev) => ({
+      ...prev,
+      customLinks: prev.customLinks.filter((link) => link.id !== linkId),
+    }));
   };
 
   const isStep1Valid =
@@ -736,6 +800,110 @@ export function NominationModal({ isOpen, onClose, defaultCityId }: NominationMo
                           placeholder="https://linkedin.com/company/..."
                           className="w-full px-4 py-3 bg-[var(--bg-dark)] border border-[var(--border)] rounded-lg text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:outline-none focus:border-[var(--brand-lime)]/50"
                         />
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-[var(--text-primary)] mb-2">
+                          Luma Events
+                        </label>
+                        <input
+                          type="url"
+                          value={formData.lumaUrl}
+                          onChange={(e) =>
+                            setFormData({ ...formData, lumaUrl: e.target.value })
+                          }
+                          placeholder="https://lu.ma/..."
+                          className="w-full px-4 py-3 bg-[var(--bg-dark)] border border-[var(--border)] rounded-lg text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:outline-none focus:border-[var(--brand-lime)]/50"
+                        />
+                      </div>
+
+                      {/* Custom Links Section */}
+                      <div className="pt-2">
+                        <label className="block text-sm font-medium text-[var(--text-primary)] mb-2">
+                          Other Social Links
+                          <span className="text-[var(--text-secondary)] font-normal ml-1">
+                            (Substack, YouTube, Discord, etc.)
+                          </span>
+                        </label>
+
+                        {/* Display existing custom links */}
+                        {formData.customLinks.length > 0 && (
+                          <div className="space-y-2 mb-3">
+                            {formData.customLinks.map((link) => {
+                              const platform = SOCIAL_PLATFORMS[link.platformId] || SOCIAL_PLATFORMS.generic;
+                              return (
+                                <div
+                                  key={link.id}
+                                  className="flex items-center gap-2 px-3 py-2 bg-[var(--bg-dark)] border border-[var(--border)] rounded-lg"
+                                >
+                                  <SocialLinkIcon platformId={link.platformId} size={18} />
+                                  <span className="text-sm text-[var(--text-secondary)] font-medium">
+                                    {platform.name}
+                                  </span>
+                                  <span className="flex-1 text-sm text-[var(--text-muted)] truncate">
+                                    {link.url}
+                                  </span>
+                                  <button
+                                    type="button"
+                                    onClick={() => handleRemoveCustomLink(link.id)}
+                                    className="p-1 text-[var(--text-muted)] hover:text-red-400 transition-colors"
+                                    aria-label="Remove link"
+                                  >
+                                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                    </svg>
+                                  </button>
+                                </div>
+                              );
+                            })}
+                          </div>
+                        )}
+
+                        {/* Add new custom link input */}
+                        {formData.customLinks.length < 5 && (
+                          <div className="space-y-2">
+                            <div className="flex gap-2">
+                              <input
+                                type="url"
+                                value={newCustomLinkUrl}
+                                onChange={(e) => {
+                                  setNewCustomLinkUrl(e.target.value);
+                                  setCustomLinkError(null);
+                                }}
+                                onKeyDown={(e) => {
+                                  if (e.key === "Enter") {
+                                    e.preventDefault();
+                                    handleAddCustomLink();
+                                  }
+                                }}
+                                placeholder="Paste any social link..."
+                                className="flex-1 px-4 py-2.5 bg-[var(--bg-dark)] border border-[var(--border)] rounded-lg text-[var(--text-primary)] placeholder-[var(--text-muted)] text-sm focus:outline-none focus:border-[var(--brand-lime)]/50"
+                              />
+                              <button
+                                type="button"
+                                onClick={handleAddCustomLink}
+                                className="px-4 py-2.5 bg-[var(--bg-card-hover)] hover:bg-[var(--border)] border border-[var(--border)] rounded-lg text-[var(--text-primary)] font-medium transition-colors flex items-center gap-1.5"
+                              >
+                                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                                </svg>
+                                Add
+                              </button>
+                            </div>
+                            {customLinkError && (
+                              <p className="text-xs text-red-400">{customLinkError}</p>
+                            )}
+                            <p className="text-xs text-[var(--text-secondary)]">
+                              We&apos;ll auto-detect the platform and show the right icon
+                            </p>
+                          </div>
+                        )}
+
+                        {formData.customLinks.length >= 5 && (
+                          <p className="text-xs text-[var(--text-secondary)]">
+                            Maximum 5 custom links reached
+                          </p>
+                        )}
                       </div>
                     </motion.div>
                   )}
