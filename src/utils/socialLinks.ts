@@ -303,23 +303,24 @@ export function generateLinkId(): string {
 export function sanitizeCustomLinks(links: CustomLink[]): CustomLink[] {
   if (!Array.isArray(links)) return [];
 
-  return links
-    .filter((link) => {
-      if (!link || typeof link !== "object") return false;
-      if (!link.url || typeof link.url !== "string") return false;
-      return true;
-    })
-    .map((link) => {
-      const detected = parseCustomLink(link.url);
-      if (!detected) return null;
+  const result: CustomLink[] = [];
 
-      return {
-        id: link.id || generateLinkId(),
-        url: detected.url,
-        platformId: detected.platform.id,
-        displayName: link.displayName || detected.displayName,
-      };
-    })
-    .filter((link): link is CustomLink => link !== null)
-    .slice(0, 10); // Limit to 10 custom links
+  for (const link of links) {
+    if (!link || typeof link !== "object") continue;
+    if (!link.url || typeof link.url !== "string") continue;
+
+    const detected = parseCustomLink(link.url);
+    if (!detected) continue;
+
+    result.push({
+      id: link.id || generateLinkId(),
+      url: detected.url,
+      platformId: detected.platform.id,
+      displayName: link.displayName || detected.displayName,
+    });
+
+    if (result.length >= 10) break; // Limit to 10 custom links
+  }
+
+  return result;
 }
