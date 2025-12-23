@@ -15,6 +15,16 @@ import { cities } from "@/data/cities";
 import { SpotType, spotTypeConfig, Spot, Review } from "@/data/spots";
 import { useApp } from "@/contexts/AppContext";
 import { createClient } from "@/lib/supabase/client";
+import { SocialLinkIcon } from "@/components/SocialLinkIcon";
+import { SOCIAL_PLATFORMS } from "@/utils/socialLinks";
+
+// Custom link type from database
+interface DbCustomLink {
+  id: string;
+  url: string;
+  platformId: string;
+  displayName?: string;
+}
 
 // Database spot type (snake_case from Supabase)
 interface DbSpot {
@@ -31,6 +41,7 @@ interface DbSpot {
   twitter_url: string | null;
   instagram_url: string | null;
   linkedin_url: string | null;
+  custom_links: DbCustomLink[] | null;
   approved: boolean;
   created_at: string;
 }
@@ -53,6 +64,7 @@ function transformSpot(dbSpot: DbSpot, reviews: Review[] = []): Spot {
     twitterUrl: dbSpot.twitter_url || undefined,
     instagramUrl: dbSpot.instagram_url || undefined,
     linkedinUrl: dbSpot.linkedin_url || undefined,
+    customLinks: dbSpot.custom_links || undefined,
     addedBy: "community",
     approved: dbSpot.approved,
   };
@@ -171,7 +183,7 @@ function SpotDetailPanel({ spot, onClose }: { spot: Spot; onClose: () => void })
           )}
 
           {/* Social Links */}
-          <div className="flex items-center gap-2 pt-1">
+          <div className="flex flex-wrap items-center gap-2 pt-1">
             {spot.twitterUrl && (
               <a
                 href={spot.twitterUrl}
@@ -211,6 +223,36 @@ function SpotDetailPanel({ spot, onClose }: { spot: Spot; onClose: () => void })
                 </svg>
               </a>
             )}
+            {spot.lumaUrl && (
+              <a
+                href={spot.lumaUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="p-2 bg-[var(--bg-card-hover)] hover:bg-[var(--bg-card-hover)] border border-[var(--border)] rounded-lg text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors"
+                aria-label="Luma Events"
+              >
+                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
+              </a>
+            )}
+            {/* Custom Links */}
+            {spot.customLinks && spot.customLinks.map((link) => {
+              const platform = SOCIAL_PLATFORMS[link.platformId] || SOCIAL_PLATFORMS.generic;
+              return (
+                <a
+                  key={link.id}
+                  href={link.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="p-2 bg-[var(--bg-card-hover)] hover:bg-[var(--bg-card-hover)] border border-[var(--border)] rounded-lg text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors"
+                  aria-label={platform.name}
+                  title={platform.name}
+                >
+                  <SocialLinkIcon platformId={link.platformId} size={16} />
+                </a>
+              );
+            })}
           </div>
         </div>
 

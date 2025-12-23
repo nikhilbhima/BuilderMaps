@@ -135,6 +135,8 @@ CREATE TABLE IF NOT EXISTS nominations (
   twitter_handle TEXT,
   instagram_handle TEXT,
   linkedin_url TEXT,
+  luma_url TEXT,
+  custom_links JSONB DEFAULT '[]',
   submitted_by UUID REFERENCES users(id) ON DELETE SET NULL,
   status TEXT NOT NULL DEFAULT 'pending' CHECK (status IN ('pending', 'approved', 'rejected')),
   admin_notes TEXT,

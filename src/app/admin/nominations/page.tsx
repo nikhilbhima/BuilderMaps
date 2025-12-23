@@ -3,6 +3,13 @@
 import { useState, useEffect } from "react";
 import { createClient } from "@/lib/supabase/client";
 
+interface CustomLink {
+  id: string;
+  url: string;
+  platformId: string;
+  displayName?: string;
+}
+
 interface Nomination {
   id: string;
   name: string;
@@ -17,6 +24,8 @@ interface Nomination {
   twitter_handle: string | null;
   instagram_handle: string | null;
   linkedin_url: string | null;
+  luma_url: string | null;
+  custom_links: CustomLink[] | null;
   submitted_by: string | null;
   status: "pending" | "approved" | "rejected";
   admin_notes: string | null;
@@ -95,6 +104,8 @@ export default function AdminNominationsPage() {
       twitter_url: nomination.twitter_handle ? `https://x.com/${nomination.twitter_handle}` : null,
       instagram_url: nomination.instagram_handle ? `https://instagram.com/${nomination.instagram_handle}` : null,
       linkedin_url: nomination.linkedin_url,
+      luma_url: nomination.luma_url,
+      custom_links: nomination.custom_links,
       added_by: "admin",
       approved: true,
     });

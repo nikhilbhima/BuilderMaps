@@ -8,6 +8,7 @@ import {
   validateCoordinates,
 } from "@/utils/sanitize";
 import { validateOrigin, csrfError } from "@/utils/csrf";
+import { sanitizeCustomLinks } from "@/utils/socialLinks";
 
 // Rate limiting: simple in-memory store
 const requestCounts = new Map<string, { count: number; resetTime: number }>();
@@ -125,8 +126,14 @@ export async function POST(request: NextRequest) {
     const googleMapsUrl = sanitizeUrl(body.googleMapsUrl);
     const websiteUrl = sanitizeUrl(body.websiteUrl);
     const linkedinUrl = sanitizeUrl(body.linkedinUrl);
+    const lumaUrl = sanitizeUrl(body.lumaUrl);
     const twitterHandle = sanitizeHandle(body.twitterHandle || "");
     const instagramHandle = sanitizeHandle(body.instagramHandle || "");
+
+    // Sanitize custom links
+    const customLinks = body.customLinks
+      ? sanitizeCustomLinks(body.customLinks)
+      : [];
 
     // Insert nomination
     const { data, error } = await supabase.from("nominations").insert({
@@ -142,6 +149,8 @@ export async function POST(request: NextRequest) {
       twitter_handle: twitterHandle || null,
       instagram_handle: instagramHandle || null,
       linkedin_url: linkedinUrl,
+      luma_url: lumaUrl,
+      custom_links: customLinks.length > 0 ? customLinks : null,
       submitted_by: user?.id || null,
       status: "pending",
     }).select().single();
