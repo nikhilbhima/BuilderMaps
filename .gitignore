@@ -40,3 +40,7 @@ Thumbs.db
 *.tsbuildinfo
 # Claude Code (keep local settings private, share skills)
 .claude/settings.local.json
+
+# Database backups (may contain sensitive data)
+database/*_backup.sql
+database/*.dump
