@@ -29,8 +29,8 @@ A community-driven platform that helps founders and builders discover coworking 
 
 1. Clone the repository
    ```bash
-   git clone https://github.com/your-org/builder-maps.git
-   cd builder-maps
+   git clone https://github.com/nikhilbhima/BuilderMaps.git
+   cd BuilderMaps
    ```
 
 2. Install dependencies
